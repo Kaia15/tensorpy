@@ -42,12 +42,12 @@ class Tensor:
         TO-DO
         """
         if not shape or any(dim <= 0 for dim in shape):
-            raise ValueError(f"")
+            raise ValueError(f"Cannot create Tensor of 1(s) with invalid shape {shape}")
         
-        if len(shape) == 0:
+        if len(shape) == 1:
             return cls([0] * shape[0])
         
-        return cls([cls.ones(shape[1:]).data for _ in range(shape[0])])
+        return cls([cls.zeros(shape[1:]).data for _ in range(shape[0])])
 
     @classmethod
     def array(cls,shape: tuple) -> 'Tensor':
@@ -57,7 +57,7 @@ class Tensor:
     def empty(self):
         pass
 
-    def transpose(self,new_shape):
+    def transpose(self,axes):
         pass
 
     def reshape(self):
@@ -73,6 +73,10 @@ class Test:
         data = [[[1,2,3]]]
         t = Tensor(data)
         print (t.shape)
+        first_zeros = (2,2)
+        print (Tensor.zeros(first_zeros).data)
+        second_zeros = (2,2,2)
+        print (Tensor.zeros(second_zeros).data)
 
 Test.unittest()
 
