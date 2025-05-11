@@ -1,4 +1,5 @@
 from typing import Union
+from collections import defaultdict
 
 class Tensor:
     """
@@ -55,6 +56,7 @@ class Tensor:
     def array(cls, data: Union[list, tuple], ndmin: int = 0) -> 'Tensor':
         """
         TO-DO
+        notes about `map()`
         """
         if any(isinstance(x, str) for x in data): 
             raise TypeError(f"Our package only processes int, float, and bool types.")
@@ -83,9 +85,63 @@ class Tensor:
     @classmethod
     def empty(self):
         pass
+    
+    # simple transpose
+    def transpose(self,cls,axes: tuple = None):
+        """
+        Not only for 2D-Array, but for ND-Array
+        compare this to `argsort`
+        """
+        ndims = len(self.shape)
+        if not axes:
+            axes = [i for i in range (ndims - 1,-1,-1)]
+        
+        data = self.data
+        
+        def all_coords(shape):
+            if not shape: return [""]
+            first_dim = shape[0]
+            left_coords = all_coords(shape[1:])
+            result = []
+            for i in range (first_dim):
+                for prev in left_coords:
+                    result.append(f"{i}" + prev)
+            return result
+        all_cors = all_coords(self.shape)
+        formatted_cors = [list(map(int,list(x))) for x in all_cors]
+        
+        def get_value(cor,d):
+            for c in cor:
+                d = d[c]
+            return d
+        
+        cor_dict = defaultdict(list)
+        for cor in formatted_cors:
+            cor_dict[get_value(cor,data)] = cor
 
-    def transpose(self,axes) -> 'Tensor':
-        pass
+        def rearrange(c):
+            t = {}
+            for x,y in enumerate(c):
+                t[x] = y
+            return [t[i] for i in axes]
+        new_cor_dict = {k: rearrange(c) for k,c in zip(cor_dict, formatted_cors)}
+        new_shape = [0] * ndims
+        for cor in new_cor_dict.values():
+            for i in range (ndims):
+                new_shape[i] = max(new_shape[i], cor[i] + 1)
+
+        initialized_zeros = cls.zeros(new_shape)
+        initialized_zeros = initialized_zeros.data
+        
+
+        def set_value(cor,value,mat):
+            for c in cor[:-1]:
+                mat = mat[c]
+            mat[cor[-1]] = value
+        for k,cor in new_cor_dict.items():
+            set_value(cor,k,initialized_zeros)
+
+        return Tensor(initialized_zeros)
 
     def reshape(self):
         pass
@@ -97,15 +153,25 @@ class Tensor:
     
 class Test:
     def unittest():
-        data = [[[1,2,3]]]
+        data = [
+            [  
+                [1, 2, 3],
+                [4, 5, 6]
+            ],
+            [  
+                [7, 8, 9],
+                [10, 11, 12]
+            ]
+        ]
         t = Tensor(data)
-        print (t.shape)
-        first_zeros = (2,2)
-        print (Tensor.zeros(first_zeros).data)
-        second_zeros = (2,2,2)
-        print (Tensor.zeros(second_zeros).data)
-        data = [True, False, 1, 2.0]
-        print (Tensor.array(data).data)
+        # print (t.shape)
+        # first_zeros = (2,2)
+        # print (Tensor.zeros(first_zeros).data)
+        # second_zeros = (2,2,2)
+        # print (Tensor.zeros(second_zeros).data)
+        # data = [True, False, 1, 2.0]
+        # print (Tensor.array(data).data)
+        t.transpose(Tensor)
 
 Test.unittest()
 
