@@ -111,9 +111,6 @@ class Tensor:
 
         all_cors = all_coords(self.shape)
         formatted_cors = [tuple(x) for x in all_cors]
-        def all_cords(shape):
-            return list(product(*[range(dim) for dim in shape]))
-        formatted_cors = all_cords(self.shape)
         
         def get_value(cor,d):
             for c in cor:
