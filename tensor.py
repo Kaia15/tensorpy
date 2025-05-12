@@ -143,7 +143,7 @@ class Tensor:
         return Tensor(initialized_zeros)
     
     @staticmethod
-    def _worker(args):
+    def _transpose_worker(args):
         cor, value, axes = args
         new_cor = tuple(cor[i] for i in axes)
         return new_cor, value
@@ -174,7 +174,7 @@ class Tensor:
         args = [(cor, get_value(cor, data), axes) for cor in cors]
 
         with Pool(cpu_count()) as pool:
-            mapped = pool.map(Tensor._worker, args)
+            mapped = pool.map(Tensor._transpose_worker, args)
 
         initialized_zeros = self.__class__.zeros(tuple(new_shape)).data
 
