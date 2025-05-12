@@ -91,8 +91,7 @@ class Tensor:
 
     def simple_transpose(self, axes: tuple = None):
         """
-        Not only for 2D-Array, but for ND-Array
-        compare this to `argsort`
+        TO-DO
         """
         start = time.perf_counter()
         ndims = len(self.shape)
@@ -101,17 +100,17 @@ class Tensor:
         
         data = self.data
         
-        # def all_coords(shape):
-        #     if not shape: return [""]
-        #     first_dim = shape[0]
-        #     left_coords = all_coords(shape[1:])
-        #     result = []
-        #     for i in range (first_dim):
-        #         for prev in left_coords:
-        #             result.append(f"{i}" + prev)
-        #     return result
-        # all_cors = all_coords(self.shape)
-        # formatted_cors = [list(map(int,list(x))) for x in all_cors]
+        def all_coords(shape):
+            if not shape:
+                return [[]]  
+            result = []
+            for i in range(shape[0]):
+                for tail in all_coords(shape[1:]):
+                    result.append([i] + tail)
+            return result
+
+        all_cors = all_coords(self.shape)
+        formatted_cors = [tuple(x) for x in all_cors]
         def all_cords(shape):
             return list(product(*[range(dim) for dim in shape]))
         formatted_cors = all_cords(self.shape)
@@ -153,6 +152,9 @@ class Tensor:
         return new_cor, value
     
     def fast_transpose(self, axes: tuple = None):
+        """
+        TO-DO
+        """
         start = time.perf_counter()
         ndims = len(self.shape)
         if not axes:
@@ -163,9 +165,6 @@ class Tensor:
         
         new_shape = [shape[ax] for ax in axes]
 
-        """
-        This function is equivalent to `all_cords()` in `simple_transpose`
-        """
         def all_cords(shape):
             return list(product(*[range(dim) for dim in shape]))
 
