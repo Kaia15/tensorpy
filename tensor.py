@@ -1,5 +1,8 @@
 from typing import Union
 from collections import defaultdict
+from itertools import product
+from multiprocessing import Pool, cpu_count
+import time 
 
 class Tensor:
     """
@@ -85,52 +88,50 @@ class Tensor:
     @classmethod
     def empty(self):
         pass
-    
-    # simple transpose
-    def transpose(self,cls,axes: tuple = None):
+
+    def simple_transpose(self, axes: tuple = None):
         """
         Not only for 2D-Array, but for ND-Array
         compare this to `argsort`
         """
+        start = time.perf_counter()
         ndims = len(self.shape)
         if not axes:
             axes = [i for i in range (ndims - 1,-1,-1)]
         
         data = self.data
         
-        def all_coords(shape):
-            if not shape: return [""]
-            first_dim = shape[0]
-            left_coords = all_coords(shape[1:])
-            result = []
-            for i in range (first_dim):
-                for prev in left_coords:
-                    result.append(f"{i}" + prev)
-            return result
-        all_cors = all_coords(self.shape)
-        formatted_cors = [list(map(int,list(x))) for x in all_cors]
+        # def all_coords(shape):
+        #     if not shape: return [""]
+        #     first_dim = shape[0]
+        #     left_coords = all_coords(shape[1:])
+        #     result = []
+        #     for i in range (first_dim):
+        #         for prev in left_coords:
+        #             result.append(f"{i}" + prev)
+        #     return result
+        # all_cors = all_coords(self.shape)
+        # formatted_cors = [list(map(int,list(x))) for x in all_cors]
+        def all_cords(shape):
+            return list(product(*[range(dim) for dim in shape]))
+        formatted_cors = all_cords(self.shape)
         
         def get_value(cor,d):
             for c in cor:
                 d = d[c]
             return d
         
-        cor_dict = defaultdict(list)
-        for cor in formatted_cors:
-            cor_dict[get_value(cor,data)] = cor
+        coord_value_pairs = [(cor, get_value(cor, data)) for cor in formatted_cors]
 
-        def rearrange(c):
-            t = {}
-            for x,y in enumerate(c):
-                t[x] = y
-            return [t[i] for i in axes]
-        new_cor_dict = {k: rearrange(c) for k,c in zip(cor_dict, formatted_cors)}
+        
+        new_cor_dict = [(tuple(c[i] for i in axes), v) for c, v in coord_value_pairs]
+
         new_shape = [0] * ndims
-        for cor in new_cor_dict.values():
+        for cor, _ in new_cor_dict:
             for i in range (ndims):
                 new_shape[i] = max(new_shape[i], cor[i] + 1)
 
-        initialized_zeros = cls.zeros(new_shape)
+        initialized_zeros = self.__class__.zeros(new_shape)
         initialized_zeros = initialized_zeros.data
         
 
@@ -138,10 +139,61 @@ class Tensor:
             for c in cor[:-1]:
                 mat = mat[c]
             mat[cor[-1]] = value
-        for k,cor in new_cor_dict.items():
-            set_value(cor,k,initialized_zeros)
+        for cor,val in new_cor_dict:
+            set_value(cor,val,initialized_zeros)
 
+        end = time.perf_counter()
+        print("Progressing time:", end - start)
         return Tensor(initialized_zeros)
+    
+    @staticmethod
+    def _worker(args):
+        cor, value, axes = args
+        new_cor = tuple(cor[i] for i in axes)
+        return new_cor, value
+    
+    def fast_transpose(self, axes: tuple = None):
+        start = time.perf_counter()
+        ndims = len(self.shape)
+        if not axes:
+            axes = [i for i in range (ndims - 1,-1,-1)]
+
+        shape = self.shape
+        data = self.data
+        
+        new_shape = [shape[ax] for ax in axes]
+
+        """
+        This function is equivalent to `all_cords()` in `simple_transpose`
+        """
+        def all_cords(shape):
+            return list(product(*[range(dim) for dim in shape]))
+
+        def get_value(cor, d):
+            for c in cor:
+                d = d[c]
+            return d
+
+        cors = all_cords(shape)
+        args = [(cor, get_value(cor, data), axes) for cor in cors]
+
+        with Pool(cpu_count()) as pool:
+            mapped = pool.map(Tensor._worker, args)
+
+        initialized_zeros = self.__class__.zeros(tuple(new_shape)).data
+
+        def set_value(cor, value, mat):
+            for c in cor[:-1]:
+                mat = mat[c]
+            mat[cor[-1]] = value
+
+        for new_cor, value in mapped:
+            set_value(new_cor, value, initialized_zeros)
+
+        end = time.perf_counter()
+        print("Progressing time:", end - start)
+        return Tensor(initialized_zeros)
+
 
     def reshape(self):
         pass
@@ -152,27 +204,29 @@ class Tensor:
 
     
 class Test:
+    @staticmethod
     def unittest():
         data = [
-            [  
-                [1, 2, 3],
-                [4, 5, 6]
-            ],
-            [  
-                [7, 8, 9],
-                [10, 11, 12]
+            [
+                [x + y + z for z in range(200)]  
+                for y in range(200)             
             ]
+            for x in range(200)                  
         ]
-        t = Tensor(data)
-        # print (t.shape)
-        # first_zeros = (2,2)
-        # print (Tensor.zeros(first_zeros).data)
-        # second_zeros = (2,2,2)
-        # print (Tensor.zeros(second_zeros).data)
-        # data = [True, False, 1, 2.0]
-        # print (Tensor.array(data).data)
-        t.transpose(Tensor)
+        t1 = Tensor(data)
+        t2 = Tensor(data)
+        simple_transposed = t1.simple_transpose(axes=(1,2,0))
+        fast_transposed = t2.fast_transpose(axes=(1,2,0))
+        # print (t.data)
+        # print (simple_transposed.data)
+        # print (fast_transposed.data)
 
-Test.unittest()
+
+"""
+Why do we need to test multiprocessing in main() stack?
+"""
+if __name__ == "__main__":
+    Test.unittest()
+
 
     
