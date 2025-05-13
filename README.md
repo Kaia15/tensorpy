@@ -12,15 +12,15 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 - `a`: Input array to copy
 
 **Functions**:
-1. `.empty(shape, dtype=int)`
+1. `.empty(shape, dtype=int)`:
    - Creates an uninitialized array of given shape
    - Contents are arbitrary until explicitly set
 
-2. `.array(object, dtype=int)`
+2. `.array(object, dtype=int)`:
    - Creates array from list/tuple
    - Example: `.array([1,2,3]) → [1,2,3]`
 
-3. `.zeros(shape, dtype=int)`
+3. `.zeros(shape, dtype=int)`:
    - Creates array filled with 0
    - Example: `.zeros((2,2)) → [[0,0],[0,0]]`
 
@@ -32,25 +32,22 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 ### Array Manipulation
 
-1. `.arange(start, stop, step, dtype=int)`
-   - Creates evenly spaced values within interval
+1. `.arange(start, stop, step, dtype=int)`:
+   - Creates evenly spaced values within the interval
    - Similar to Python's range() but returns array
 
-2. `.reshape(a, newshape)`
+2. `.reshape(a, newshape)`:
    - Reshapes array without changing data
    - Example: `reshape([1,2,3,4], (2,2)) → [[1,2],[3,4]]`
 
-3. `.ndarray.flat`:
+3. `.ndarray.flat ~= .ndarray.flatten(order = 'C' | 'F')`:
 
-4. `.ndim`:
+4. `.ndim()`:
 
-5. `.ndarray.flatten`:
-
-6. `.ndarray.T`:
-
-7. `.ndarray.transpose`:
+5. `.ndarray.T ~= .ndarray.transpose(axes : tuple = Optional)`:
 
 ### Mathematical Functions
+
 
 ### Polynomials
 
