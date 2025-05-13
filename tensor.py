@@ -88,6 +88,9 @@ class Tensor:
     def empty(self):
         pass
 
+    def ndim(self):
+        return self.shape
+
     def _get_value(cor,d):
         for c in cor:
             d = d[c]
@@ -110,7 +113,7 @@ class Tensor:
     def _fast_all_cords(shape):
         return list(product(*[range(dim) for dim in shape]))
 
-    def transpose(self, axes: tuple = None):
+    def transpose(self, axes: tuple = None) -> 'Tensor':
         """
         TO-DO
         """
@@ -146,7 +149,7 @@ class Tensor:
         new_cor = tuple(cor[i] for i in axes)
         return new_cor, value
     
-    def multi_processing_transpose(self, axes: tuple = None):
+    def multi_processing_transpose(self, axes: tuple = None) -> 'Tensor':
         """
         TO-DO
         """

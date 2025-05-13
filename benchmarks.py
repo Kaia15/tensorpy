@@ -23,7 +23,28 @@ def benchmark_transpose():
     end = time.perf_counter()
     print(f"Numpy flatten: {end - start:.4f}s")
 
-def benchmark_flatten():
+def benchmark_c_flatten():
+    data = [[[x + y + z for z in range(100)] for y in range(100)] for x in range(100)]
+    t = Tensor(data)
+    np_array = np.array(data)
+    order = 'C'
+
+    start = time.perf_counter()
+    flat_seq = t.flatten(order)
+    end = time.perf_counter()
+    print(f"Tensor (sequential) flatten time: {end - start:.4f}s")
+
+    start = time.perf_counter()
+    flat_mp = t.multi_processing_flatten(order)
+    end = time.perf_counter()
+    print(f"Tensor (multi-processing) flatten time: {end - start:.4f}s")
+
+    start = time.perf_counter()
+    flat_np = np_array.flatten(order)
+    end = time.perf_counter()
+    print(f"Numpy flatten: {end - start:.4f}s")
+
+def benchmark_f_flatten():
     data = [[[x + y + z for z in range(100)] for y in range(100)] for x in range(100)]
     t = Tensor(data)
     np_array = np.array(data)
@@ -46,4 +67,5 @@ def benchmark_flatten():
 
 if __name__ == "__main__":
     benchmark_transpose()
-    benchmark_flatten()
+    benchmark_c_flatten()
+    benchmark_f_flatten()
