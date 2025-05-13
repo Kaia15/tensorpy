@@ -20,7 +20,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
    - Creates array from list/tuple
    - Example: `.array([1,2,3]) → [1,2,3]`
 
-3. `.zeros(shape, dtype=int)`
+3. `.zeros(shape, dtype=int)`:
    - Creates array filled with 0
    - Example: `.zeros((2,2)) → [[0,0],[0,0]]`
 
