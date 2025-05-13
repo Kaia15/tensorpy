@@ -88,6 +88,36 @@ class Tensor:
     def empty(self):
         pass
 
+    @classmethod
+    def arange(cls, *args) -> 'Tensor':
+        """
+        1. If any argument is float -> do float addition 
+        2. No floats -> use .range() in Python 
+        """
+        num_args = len(args)
+        if num_args == 1: 
+            start, end = 0, args[0]
+            step = 1
+        elif num_args == 2:
+            start, end = args
+            step = 1
+        else:
+            start, end, step = args
+        
+        is_float = any([isinstance(arg, float) for arg in args])
+        data = []
+        
+        if is_float:
+            start = float(start)
+            current = start
+            while (current < end and step > 0) or (current > end and step < 0):
+                data.append(current)
+                current += step
+        else:
+            data = list(range(start, end, step))
+
+        return cls(data)
+
     def ndim(self):
         return self.shape
 
