@@ -30,6 +30,17 @@ class Tensor:
                 break
         return tuple(shape)
     
+    def _infer_shape(cls, data: list):
+        if not isinstance(data, list):
+            return ()
+        
+        first_shape = cls._infer_shape(data[0])
+        for item in data[1:]:
+            if cls._infer_shape(item) != first_shape:
+                raise ValueError("Irregular nested list: shape is not consistent.")
+        
+        return True
+    
     def _size(data):
         shape = Tensor._get_shape(data)
         return math.prod(list(shape))
@@ -215,44 +226,46 @@ class Tensor:
 
         return Tensor(initialized_zeros)
 
-    # TO-DO
-    @classmethod
-    def reshape(cls, a, new_shape: Union[tuple, int], order: str = None) -> 'Tensor':
+    def reshape(a: Union['Tensor', list], new_shape: Union[tuple, int], order: str = None) -> 'Tensor':
         if not order: 
             order = 'C'
+        
+        # check to call infer_shape (for inconsistent list)
+        
+        num_elements = Tensor._size(a)
+        actual_num_elements = math.prod(list(new_shape))
+        if actual_num_elements != num_elements:
+            raise ValueError(f"Cannot reshape the data within invalid {new_shape}")
             
         if isinstance(new_shape, int):
-            return cls.flatten(cls(a), order)
+            return Tensor.flatten(Tensor(a), order) if isinstance(a, list) else Tensor.flatten(a, order)
         else:
-            num_elements = cls._size(a)
-            actual_num_elements = math.prod(list(new_shape))
-            if actual_num_elements != num_elements:
-                raise ValueError(f"Cannot reshape the data within invalid {new_shape}")
-            
-            new_zeros = cls.zeros(new_shape).data
-            all_cors = cls._all_f_coords(new_shape) if order == 'F' else Tensor._all_c_coords(new_shape)
-            data = cls.flatten(cls(a), order)
-            
+            reshaped_data = Tensor.zeros(new_shape).data
+            all_cors = Tensor._all_f_coords(new_shape) if order == 'F' else Tensor._all_c_coords(new_shape)
+            data = Tensor.flatten(Tensor(a), order) if isinstance(a, list) else Tensor.flatten(a, order)
+        
             for new_cor, value in zip(all_cors, data):
-                cls._set_value(new_cor, value, new_zeros)
+                Tensor._set_value(new_cor, value, reshaped_data)
 
-            return cls(new_zeros)
+            return Tensor(reshaped_data)
 
-    def _all_f_coords(shape):
+    @classmethod
+    def _all_f_coords(cls, shape):
         if not shape:
             return [[]]
         result = []
-        for tail in Tensor._all_f_coords(shape[1:]):
+        for tail in cls._all_f_coords(shape[1:]):
             for i in range(shape[0]):
                 result.append([i] + tail)
         return result
     
-    def _all_c_coords(shape):
+    @classmethod
+    def _all_c_coords(cls, shape):
         if not shape:
-            return [[]]  
+            return [[]]
         result = []
         for i in range(shape[0]):
-            for tail in Tensor._all_c_coords(shape[1:]):
+            for tail in cls._all_c_coords(shape[1:]):
                 result.append([i] + tail)
         return result
 
@@ -303,30 +316,7 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-        a = [
-            [  
-                [  
-                    [1, 2, 3],     
-                    [4, 5, 6]      
-                ],
-                [  
-                    [7, 8, 9],
-                    [10, 11, 12]
-                ]
-            ],
-            [  
-                [  
-                    [13, 14, 15],
-                    [16, 17, 18]
-                ],
-                [  
-                    [19, 20, 21],
-                    [22, 23, 24]
-                ]
-            ]
-        ]
-        t1 = Tensor.reshape(a, (2, 3, 4), order='F')
-        print (t1.data)
+       pass
         
 """
 Why do we need to test multiprocessing in main() stack?
