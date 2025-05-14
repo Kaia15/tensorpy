@@ -35,6 +35,11 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 1. `.arange(start, stop, step, dtype=int)`:
    - Creates evenly spaced values within the interval
    - Similar to Python's range() but returns array
+   - Example:
+     ```
+      Tensor.arange(0, 5, 1) # → [0, 1, 2, 3, 4]
+      Tensor.arange(0.5, 2.0, 0.5) # → [0.5, 1.0, 1.5]
+     ```
    - **Challenge**: float arithmetic (floating points are covered -> rounding up after addition)
 
 2. `.reshape(a, newshape)`:
@@ -44,12 +49,27 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 3. `.ndarray.flat ~= .ndarray.flatten(order = 'C' | 'F')`:
    - Flatten all the elements in the input matrix into a list
+   - Example:
+     ```
+      t = Tensor([[1, 2], [3, 4]])
+      t.flatten(order='C') # → [1, 2, 3, 4]
+      t.flatten(order='F') # → [1, 3, 2, 4]
+     ```
    - **Challenge**: F-style flattening
      
 4. `.ndim()`:
-   - One of the core methods of `Tensor` class, retrieving the number of dimensions (`n)
+   - One of the core methods of `Tensor` class, retrieving the number of dimensions (`n`)
+     ```
+      Tensor([[1, 2], [3, 4]]).ndim() # → 2
+      Tensor([1, 2, 3]).ndim() # → 1
+     ```
    
 5. `.ndarray.T ~= .ndarray.transpose(axes : tuple = Optional)`:
+   - Example:
+     ```
+     Tensor([[1, 2], [3, 4]]).transpose() # → [[1, 3], [2, 4]]
+     Tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]]).transpose((1, 0, 2)) # -> [[[1, 2], [5, 6]], [[3, 4], [7, 8]]]
+     ```
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
    
 ### Mathematical Functions
