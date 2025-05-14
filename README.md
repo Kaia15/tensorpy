@@ -47,7 +47,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
    - **Challenge**: F-style flattening
      
 4. `.ndim()`:
-   -
+   - One of the core methods of `Tensor` class, retrieving the number of dimensions (`n)
    
 5. `.ndarray.T ~= .ndarray.transpose(axes : tuple = Optional)`:
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
