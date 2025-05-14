@@ -44,7 +44,10 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 2. `.reshape(a, newshape)`:
    - Reshapes the array without changing the data
-   - Example: `reshape([1,2,3,4], (2,2)) → [[1,2],[3,4]]`
+   - Example:
+     ```
+     Tensor.reshape([1,2,3,4], (2,2)) → [[1,2],[3,4]]
+     ```
    - **Challenge**: check irregular/inconsistent input list
 
 3. `.ndarray.flat ~= .ndarray.flatten(order = 'C' | 'F')`:
