@@ -2,6 +2,7 @@ from typing import Union
 from collections import defaultdict
 from itertools import product
 from multiprocessing import Pool, cpu_count
+import numpy as np
 
 class Tensor:
     """
@@ -105,13 +106,17 @@ class Tensor:
             start, end, step = args
         
         is_float = any([isinstance(arg, float) for arg in args])
+        if is_float:
+            strs = [str(arg).split(".")[1] for arg in args]
+            strs.sort(key = lambda x: len(x))
+            max_num_digits = len(strs[-1]) if strs else 0
         data = []
         
         if is_float:
             start = float(start)
             current = start
             while (current < end and step > 0) or (current > end and step < 0):
-                data.append(current)
+                data.append(round(current,max_num_digits))
                 current += step
         else:
             data = list(range(start, end, step))
