@@ -59,6 +59,6 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 ### Screenshots
 
-![image](https://github.com/user-attachments/assets/f85c1555-d278-43bb-88b6-7e0b611d91ff)
+- 05.13.25: ![image](https://github.com/user-attachments/assets/f85c1555-d278-43bb-88b6-7e0b611d91ff)
 
 
