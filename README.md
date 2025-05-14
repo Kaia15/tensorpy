@@ -74,7 +74,16 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      Tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]]).transpose((1, 0, 2)) # -> [[[1, 2], [5, 6]], [[3, 4], [7, 8]]]
      ```
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
-   
+
+### Linear Algebra
+1. `.dot(x1, x2)`:
+   - Output the dot product of any 2 N-D arrays `x1`, `x2`
+   - Example:
+     ```
+     A = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
+     B = [[1, 2], [3, 4], [5, 6]]
+     -> A x B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
+     ```
 ### Mathematical Functions
 
 
