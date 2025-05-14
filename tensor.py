@@ -351,7 +351,7 @@ class Tensor:
         for i in range (0, len(x1_data), m):
             row = x1_data[i : i + m]
             rows.append(row)
-        print (rows)
+        # print (rows)
         
         all_f_coors = Tensor._all_f_coords(x2_shape)
         x2_mat = x2.data if isinstance(x2, Tensor) else x2
@@ -360,20 +360,21 @@ class Tensor:
         for j in range (0, len(x2_data), m):
             col = x2_data[j : j + m]
             cols.append(col)
-        print (cols)
+        # print (cols)
         C_order = []
         for row in rows:
             for col in cols:
                 dot_val = sum(r * c for r, c in zip(row, col))
                 C_order.append(dot_val)
-        print (C_order)
+        # print (C_order)
         # TO-DO: distribute all elements in C_order list into a matrix with final shape 
         final_shape = tuple(list(x1_shape[:-1]) + list(x2_shape[-1:]))
         final_data = Tensor.zeros(final_shape).data
         all_coors = Tensor._all_coords(final_shape)
         for c, value in zip(all_coors, C_order):
             Tensor._set_value(c, value, final_data)
-        print (final_data)
+        
+        return Tensor(final_data)
     
     def add(x1, x2):
         pass
@@ -381,19 +382,56 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-       x1 = [
-        [[1, 2, 3],
-        [4, 5, 6]],
+       A = [
+        [  # Batch 0
+            [[ 1, 2, 3, 4, 5, 6],
+            [ 7, 8, 9,10,11,12],
+            [13,14,15,16,17,18],
+            [19,20,21,22,23,24]],
 
-        [[7, 8, 9],
-        [10, 11, 12]]
+            [[25,26,27,28,29,30],
+            [31,32,33,34,35,36],
+            [37,38,39,40,41,42],
+            [43,44,45,46,47,48]],
+        ],
+
+        [  # Batch 1
+            [[49,50,51,52,53,54],
+            [55,56,57,58,59,60],
+            [61,62,63,64,65,66],
+            [67,68,69,70,71,72]],
+
+            [[73,74,75,76,77,78],
+            [79,80,81,82,83,84],
+            [85,86,87,88,89,90],
+            [91,92,93,94,95,96]],
+        ],
+
+        [  # Batch 2
+            [[97, 98, 99,100,101,102],
+            [103,104,105,106,107,108],
+            [109,110,111,112,113,114],
+            [115,116,117,118,119,120]],
+
+            [[121,122,123,124,125,126],
+            [127,128,129,130,131,132],
+            [133,134,135,136,137,138],
+            [139,140,141,142,143,144]],
         ]
-       x2 = [
-        [1, 2],
-        [3, 4],
-        [5, 6]
         ]
-       Tensor.dot(x1, x2)
+
+       B = [
+        [  # Only 1 batch (to be broadcast)
+            [1, 2, 3, 4, 5, 6, 7],
+            [8, 9,10,11,12,13,14],
+            [15,16,17,18,19,20,21],
+            [22,23,24,25,26,27,28],
+            [29,30,31,32,33,34,35],
+            [36,37,38,39,40,41,42],
+        ]
+        ]
+
+       Tensor.dot(A, B)
         
 """
 Why do we need to test multiprocessing in main() stack?
