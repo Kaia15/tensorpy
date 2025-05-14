@@ -3,6 +3,7 @@ from collections import defaultdict
 from itertools import product
 from multiprocessing import Pool, cpu_count
 import numpy as np
+import math
 
 class Tensor:
     """
@@ -14,9 +15,9 @@ class Tensor:
         TO-DO
         """
         self.data = data
-        self.shape = self._get_shape(data)
+        self.shape = Tensor._get_shape(data)
 
-    def _get_shape(self,data: list) -> tuple:
+    def _get_shape(data: list) -> tuple:
         """
         TO-DO
         """
@@ -28,6 +29,10 @@ class Tensor:
             if not isinstance(data, list): 
                 break
         return tuple(shape)
+    
+    def _size(data):
+        shape = Tensor._get_shape(data)
+        return math.prod(list(shape))
 
     @classmethod
     def ones(cls,shape: tuple) -> 'Tensor':
@@ -211,8 +216,27 @@ class Tensor:
         return Tensor(initialized_zeros)
 
     # TO-DO
-    def reshape(self):
-        pass
+    @classmethod
+    def reshape(cls, a, new_shape: Union[tuple, int], order: str = None) -> 'Tensor':
+        if not order: 
+            order = 'C'
+            
+        if isinstance(new_shape, int):
+            return cls.flatten(cls(a), order)
+        else:
+            num_elements = cls._size(a)
+            actual_num_elements = math.prod(list(new_shape))
+            if actual_num_elements != num_elements:
+                raise ValueError(f"Cannot reshape the data within invalid {new_shape}")
+            
+            new_zeros = cls.zeros(new_shape).data
+            all_cors = cls._all_f_coords(new_shape) if order == 'F' else Tensor._all_c_coords(new_shape)
+            data = cls.flatten(cls(a), order)
+            
+            for new_cor, value in zip(all_cors, data):
+                cls._set_value(new_cor, value, new_zeros)
+
+            return cls(new_zeros)
 
     def _all_f_coords(shape):
         if not shape:
@@ -236,8 +260,12 @@ class Tensor:
         """
         @param: order ('C' or 'F')
         """
+        if order not in ['C', 'F']:
+            raise ValueError("Order must be either C (row-major) or F (column-major)")
+        
         if not order: 
             order = 'C'
+
         shape = self.shape 
         data = self.data 
 
@@ -275,7 +303,30 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-        pass
+        a = [
+            [  
+                [  
+                    [1, 2, 3],     
+                    [4, 5, 6]      
+                ],
+                [  
+                    [7, 8, 9],
+                    [10, 11, 12]
+                ]
+            ],
+            [  
+                [  
+                    [13, 14, 15],
+                    [16, 17, 18]
+                ],
+                [  
+                    [19, 20, 21],
+                    [22, 23, 24]
+                ]
+            ]
+        ]
+        t1 = Tensor.reshape(a, (2, 3, 4), order='F')
+        print (t1.data)
         
 """
 Why do we need to test multiprocessing in main() stack?
