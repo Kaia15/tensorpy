@@ -105,7 +105,7 @@ def benchmark_arange():
     print(f"np.arange(1, 100, 2): {end - start:.4f}s")
 
 if __name__ == "__main__":
-    # benchmark_transpose()
-    # benchmark_c_flatten()
-    # benchmark_f_flatten()
+    benchmark_transpose()
+    benchmark_c_flatten()
+    benchmark_f_flatten()
     benchmark_arange()
