@@ -312,11 +312,88 @@ class Tensor:
 
         return flat_data
 
+    def dot(x1: Union['Tensor', list, int], x2: Union['Tensor', list, int]) -> 'Tensor':
+
+        if any([isinstance(x, int) for x in (x1, x2)]): 
+            bothScalar = isinstance(x1, int) and isinstance(x2, int)
+            if bothScalar: return x1 * x2
+
+            scalar = x1 if isinstance(x1, int) else x2
+            mat = x1 if not isinstance(x1, int) else x2 
+            mat = mat.data if isinstance(mat, Tensor) else mat 
+            m = Tensor._get_shape(mat)
+
+            all_coors = Tensor._all_coords(m)
+            prod_data = [Tensor._get_value(c, mat) * scalar for c in all_coors]
+            return Tensor(prod_data)
+
+        if isinstance(x1, list):
+            x1_shape = Tensor._get_shape(x1)
+        else:
+            x1_shape = Tensor._get_shape(x1.data)
+
+        if isinstance(x2, list):
+            x2_shape = Tensor._get_shape(x2)
+        else:
+            x2_shape = Tensor._get_shape(x2.data)
+        
+        if x1_shape[-1] != x2_shape[-2]: 
+            raise ValueError(f"Incompatible shapes for dot product")
+        
+        m = x1_shape[-1]
+        
+        # get the last dimension of x1
+        all_coors = Tensor._all_coords(x1_shape)
+        x1_mat = x1.data if isinstance(x1, Tensor) else x1
+        x1_data = [Tensor._get_value(c, x1_mat) for c in all_coors]
+        # print (x1_data)
+        rows = []
+        for i in range (0, len(x1_data), m):
+            row = x1_data[i : i + m]
+            rows.append(row)
+        print (rows)
+        
+        all_f_coors = Tensor._all_f_coords(x2_shape)
+        x2_mat = x2.data if isinstance(x2, Tensor) else x2
+        x2_data = [Tensor._get_value(c, x2_mat) for c in all_f_coors]
+        cols = []
+        for j in range (0, len(x2_data), m):
+            col = x2_data[j : j + m]
+            cols.append(col)
+        print (cols)
+        C_order = []
+        for row in rows:
+            for col in cols:
+                dot_val = sum(r * c for r, c in zip(row, col))
+                C_order.append(dot_val)
+        print (C_order)
+        # TO-DO: distribute all elements in C_order list into a matrix with final shape 
+        final_shape = tuple(list(x1_shape[:-1]) + list(x2_shape[-1:]))
+        final_data = Tensor.zeros(final_shape).data
+        all_coors = Tensor._all_coords(final_shape)
+        for c, value in zip(all_coors, C_order):
+            Tensor._set_value(c, value, final_data)
+        print (final_data)
+    
+    def add(x1, x2):
+        pass
     
 class Test:
     @staticmethod
     def unittest():
-       pass
+       x1 = [
+        [[1, 2, 3],
+        [4, 5, 6]],
+
+        [[7, 8, 9],
+        [10, 11, 12]]
+        ]
+       x2 = [
+        [1, 2],
+        [3, 4],
+        [5, 6]
+        ]
+       Tensor.dot(x1, x2)
         
 """
 Why do we need to test multiprocessing in main() stack?
