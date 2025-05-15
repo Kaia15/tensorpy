@@ -71,42 +71,44 @@ class Tensor:
         
         return cls([cls.zeros(shape[1:]).data for _ in range(shape[0])])
 
-    @classmethod
-    def array(cls, data: Union[list, tuple], ndmin: int = 0) -> 'Tensor':
-        """
-        TO-DO
-        notes about `map()`
-        """
-        if any(isinstance(x, str) for x in data): 
-            raise TypeError(f"Our package only processes int, float, and bool types.")
+    # @classmethod
+    # def array(cls, data: Union[list, tuple], ndmin: int = 0) -> 'Tensor':
+    #     """
+    #     TO-DO
+    #     notes about `map()`
+    #     """
+    #     if any(isinstance(x, str) for x in data): 
+    #         raise TypeError(f"Our package only processes int, float, and bool types.")
         
-        # instead of using "Tensor(data)", we just need to call "cls(data)"
-        # upcast if there exists float in the input data
-        exist_float = any(isinstance(x, float) for x in data)
-        exist_bool = any(isinstance(x, bool) for x in data)
+    #     # instead of using "Tensor(data)", we just need to call "cls(data)"
+    #     # upcast if there exists float in the input data
+    #     same_type = True
+    #     # check whether the whole list is same-typed
+    #     exist_float = any(isinstance(x, float) for x in data)
+    #     exist_bool = any(isinstance(x, bool) for x in data)
 
-        def bool2int(x):
-            if isinstance(x, bool): return 1 if True else 0
-            return x
-        if exist_bool:
-            data = map(bool2int, data)
+    #     def bool2int(x):
+    #         if isinstance(x, bool): return 1 if True else 0
+    #         return x
+    #     if exist_bool:
+    #         data = map(bool2int, data)
 
-        if exist_float:
-            data = map(float, data)
+    #     if exist_float:
+    #         data = map(float, data)
 
-        while ndmin > 0:
-            data = [data]
-            ndmin -= 1
+    #     while ndmin > 0:
+    #         data = [data]
+    #         ndmin -= 1
 
-        return cls(list(data))
+    #     return cls(list(data))
 
 
     @classmethod
     def empty(self):
         pass
 
-    @classmethod
-    def arange(cls, *args) -> 'Tensor':
+    
+    def arange(*args) -> 'Tensor':
         """
         1. If any argument is float -> do float addition 
         2. No floats -> use .range() in Python 
@@ -123,7 +125,7 @@ class Tensor:
         
         is_float = any([isinstance(arg, float) for arg in args])
         if is_float:
-            strs = [str(arg).split(".")[1] for arg in args]
+            strs = [str(arg).split(".")[1] for arg in args if isinstance(arg,float)]
             strs.sort(key = lambda x: len(x))
             max_num_digits = len(strs[-1]) if strs else 0
         data = []
@@ -135,9 +137,10 @@ class Tensor:
                 data.append(round(current,max_num_digits))
                 current += step
         else:
-            data = list(range(start, end, step))
+            data = [j for j in range(start, end, step)]
+        # print (data)
 
-        return cls(data)
+        return Tensor(data)
 
     def ndim(self):
         return self.shape
@@ -231,8 +234,10 @@ class Tensor:
             order = 'C'
         
         # check to call infer_shape (for inconsistent list)
-        
-        num_elements = Tensor._size(a)
+        if not isinstance(a, Tensor):
+            a = Tensor(a)
+
+        num_elements = Tensor._size(a.data)
         actual_num_elements = math.prod(list(new_shape))
         if actual_num_elements != num_elements:
             raise ValueError(f"Cannot reshape the data within invalid {new_shape}")
