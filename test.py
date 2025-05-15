@@ -340,6 +340,8 @@ class Test(unittest.TestCase):
             # Using matmul for batch matrix multiplication
             np_dot_complex = np.matmul(np_A, np_B)
             tensor_dot_complex = Tensor.dot(tensor_A, tensor_B)
+            print (tensor_dot_complex.data)
+            print (np_dot_complex)
             
             # Convert tensor data back to numpy for comparison
             tensor_as_np = np.array(tensor_dot_complex.data)

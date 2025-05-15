@@ -341,7 +341,15 @@ class Tensor:
             x2_shape = Tensor._get_shape(x2)
         else:
             x2_shape = Tensor._get_shape(x2.data)
-        
+
+        # print (x1_shape, x2_shape)
+
+        if len(x1_shape) == len(x2_shape) == 1:
+            x1_data = x1.data if isinstance(x1, Tensor) else x1
+            x2_data = x2.data if isinstance(x2, Tensor) else x2
+            total_prod = sum([r * c for r,c in zip(x1_data, x2_data)])
+            return total_prod
+
         if x1_shape[-1] != x2_shape[-2]: 
             raise ValueError(f"Incompatible shapes for dot product")
         
