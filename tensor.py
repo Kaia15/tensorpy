@@ -388,6 +388,14 @@ class Tensor:
                 raise ValueError(f"Cannot broadcast shapes {a} and {b}")
         return tuple(reversed(result))
     
+    def prod(a: Union['Tensor', list], axis: int = None, initial: int = None): 
+        if isinstance(a, Tensor):
+            a = a.data
+        
+        if not a: return float(1)
+    
+
+
     def add(x1, x2):
         pass
     
