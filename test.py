@@ -338,7 +338,7 @@ class Test(unittest.TestCase):
         # This is a simplified test that assumes your implementation handles it similarly to np.matmul
         try:
             # Using matmul for batch matrix multiplication
-            np_dot_complex = np.matmul(np_A, np_B)
+            np_dot_complex = np.dot(np_A, np_B)
             tensor_dot_complex = Tensor.dot(tensor_A, tensor_B)
             print (tensor_dot_complex.data)
             print (np_dot_complex)

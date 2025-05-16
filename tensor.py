@@ -1,6 +1,6 @@
 from typing import Union
 from collections import defaultdict
-from itertools import product
+from itertools import product, zip_longest
 from multiprocessing import Pool, cpu_count
 import numpy as np
 import math
@@ -344,50 +344,49 @@ class Tensor:
 
         # print (x1_shape, x2_shape)
 
+        x1_data = x1.data if isinstance(x1, Tensor) else x1
+        x2_data = x2.data if isinstance(x2, Tensor) else x2
+
         if len(x1_shape) == len(x2_shape) == 1:
-            x1_data = x1.data if isinstance(x1, Tensor) else x1
-            x2_data = x2.data if isinstance(x2, Tensor) else x2
             total_prod = sum([r * c for r,c in zip(x1_data, x2_data)])
             return total_prod
 
         if x1_shape[-1] != x2_shape[-2]: 
             raise ValueError(f"Incompatible shapes for dot product")
         
-        m = x1_shape[-1]
-        
-        # get the last dimension of x1
-        all_coors = Tensor._all_coords(x1_shape)
-        x1_mat = x1.data if isinstance(x1, Tensor) else x1
-        x1_data = [Tensor._get_value(c, x1_mat) for c in all_coors]
-        # print (x1_data)
-        rows = []
-        for i in range (0, len(x1_data), m):
-            row = x1_data[i : i + m]
-            rows.append(row)
-        # print (rows)
-        
-        all_f_coors = Tensor._all_f_coords(x2_shape)
-        x2_mat = x2.data if isinstance(x2, Tensor) else x2
-        x2_data = [Tensor._get_value(c, x2_mat) for c in all_f_coors]
-        cols = []
-        for j in range (0, len(x2_data), m):
-            col = x2_data[j : j + m]
-            cols.append(col)
-        # print (cols)
-        C_order = []
-        for row in rows:
-            for col in cols:
-                dot_val = sum(r * c for r, c in zip(row, col))
-                C_order.append(dot_val)
-        # print (C_order)
-        # TO-DO: distribute all elements in C_order list into a matrix with final shape 
-        final_shape = tuple(list(x1_shape[:-1]) + list(x2_shape[-1:]))
-        final_data = Tensor.zeros(final_shape).data
-        all_coors = Tensor._all_coords(final_shape)
-        for c, value in zip(all_coors, C_order):
-            Tensor._set_value(c, value, final_data)
-        
-        return Tensor(final_data)
+        batch_shape = Tensor._broadcast_shape(x1_shape[:-2], x2_shape[:-2])
+        m, k = x1_shape[-2], x1_shape[-1]
+        n = x2_shape[-1]
+        final_shape = batch_shape + (m, n)
+        result = Tensor.zeros(final_shape).data
+
+        # Generate all broadcasted batch indices
+        for batch_index in Tensor._all_coords(batch_shape):
+            for i in range(m):
+                for j in range(n):
+                    val = 0
+                    for kk in range(k):
+                        a_idx = tuple(batch_index + [i, kk])
+                        b_idx = tuple(batch_index + [kk, j])
+                        a_val = Tensor._get_value(a_idx, x1_data)
+                        b_val = Tensor._get_value(b_idx, x2_data)
+                        val += a_val * b_val
+                    Tensor._set_value(list(batch_index + [i,j]), val, result)
+
+        return Tensor(result)
+
+    def _broadcast_shape(a, b):
+        result = []
+        for dim_a, dim_b in zip_longest(reversed(a), reversed(b), fillvalue=1):
+            if dim_a == 1:
+                result.append(dim_b)
+            elif dim_b == 1:
+                result.append(dim_a)
+            elif dim_a == dim_b:
+                result.append(dim_a)
+            else:
+                raise ValueError(f"Cannot broadcast shapes {a} and {b}")
+        return tuple(reversed(result))
     
     def add(x1, x2):
         pass
@@ -396,7 +395,7 @@ class Test:
     @staticmethod
     def unittest():
        A = [
-        [  # Batch 0
+        [  
             [[ 1, 2, 3, 4, 5, 6],
             [ 7, 8, 9,10,11,12],
             [13,14,15,16,17,18],
@@ -408,7 +407,7 @@ class Test:
             [43,44,45,46,47,48]],
         ],
 
-        [  # Batch 1
+        [  
             [[49,50,51,52,53,54],
             [55,56,57,58,59,60],
             [61,62,63,64,65,66],
@@ -420,7 +419,7 @@ class Test:
             [91,92,93,94,95,96]],
         ],
 
-        [  # Batch 2
+        [  
             [[97, 98, 99,100,101,102],
             [103,104,105,106,107,108],
             [109,110,111,112,113,114],
@@ -434,7 +433,7 @@ class Test:
         ]
 
        B = [
-        [  # Only 1 batch (to be broadcast)
+        [  
             [1, 2, 3, 4, 5, 6, 7],
             [8, 9,10,11,12,13,14],
             [15,16,17,18,19,20,21],
@@ -444,7 +443,8 @@ class Test:
         ]
         ]
 
-       Tensor.dot(A, B)
+       print(Tensor.dot(A, B).data)
+       print(np.dot(A,B))
         
 """
 Why do we need to test multiprocessing in main() stack?
