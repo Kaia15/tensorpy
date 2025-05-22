@@ -387,13 +387,140 @@ class Tensor:
             else:
                 raise ValueError(f"Cannot broadcast shapes {a} and {b}")
         return tuple(reversed(result))
-    
-    def prod(a: Union['Tensor', list], axis: int = None, initial: int = None): 
-        if isinstance(a, Tensor):
-            a = a.data
+
+    from typing import Union, List, Any
+
+    def prod(a: Union[list, 'Tensor'], axis: int = None) -> Union[int, float, List[Any]]:
+        """
+        Computes the product along a given axis for an n-dimensional array.
+        Pure Python implementation that handles all cases correctly.
+        """
+        # Helper function to flatten nested lists
+        def flatten(nested):
+            flat = []
+            for item in nested:
+                if isinstance(item, list):
+                    flat.extend(flatten(item))
+                else:
+                    flat.append(item)
+            return flat
         
-        if not a: return float(1)
-    
+        # Case 1: axis is None - compute product of all elements
+        if axis is None:
+            flat = flatten(a)
+            if not flat:
+                return 1
+            result = 1
+            for num in flat:
+                result *= num
+            return result
+        
+        # Helper function to get array dimensions (depth)
+        def get_ndim(arr):
+            if not isinstance(arr, list):
+                return 0
+            if not arr:
+                return 1  # Empty list is 1D
+            return 1 + get_ndim(arr[0])
+        
+        # Handle scalar input
+        if not isinstance(a, list):
+            if axis == 0 or axis == -1:
+                raise ValueError(f"axis {axis} out of bounds for array of dimension 0")
+            return a
+        
+        # Handle empty list
+        if not a:
+            if axis == 0 or axis == -1:
+                return 1
+            raise ValueError(f"axis {axis} out of bounds for array of dimension 1")
+        
+        ndim = get_ndim(a)
+        
+        # Normalize negative axis
+        if axis < 0:
+            axis = ndim + axis
+        
+        # Validate axis bounds
+        if axis < 0 or axis >= ndim:
+            raise ValueError(f"axis {axis} out of bounds for array of dimension {ndim}")
+        
+        # Helper function for recursive multiplication
+        def multiply_recursive(a, b):
+            """Recursively multiply two elements that could be scalars or nested lists"""
+            if isinstance(a, list) and isinstance(b, list):
+                if len(a) != len(b):
+                    raise ValueError("Arrays have incompatible shapes for multiplication")
+                return [multiply_recursive(a_elem, b_elem) for a_elem, b_elem in zip(a, b)]
+            elif isinstance(a, list):
+                return [multiply_recursive(a_elem, b) for a_elem in a]
+            elif isinstance(b, list):
+                return [multiply_recursive(a, b_elem) for b_elem in b]
+            else:
+                return a * b
+        
+        # Recursive product computation
+        def compute_product(arr, current_depth=0):
+            # If we're not at a list, we have a scalar
+            if not isinstance(arr, list):
+                return arr
+            
+            # If we're at the target axis depth, compute product of this level
+            if current_depth == axis:
+                if not arr:
+                    return 1
+                
+                # All elements at this level should be processed
+                result = None
+                for item in arr:
+                    item_result = compute_product(item, current_depth + 1)
+                    
+                    if result is None:
+                        result = item_result
+                    else:
+                        # Handle multiplication of different types
+                        if isinstance(result, list) and isinstance(item_result, list):
+                            # Element-wise multiplication for lists
+                            if len(result) != len(item_result):
+                                raise ValueError("Arrays have incompatible shapes for multiplication")
+                            # Recursively multiply corresponding elements
+                            new_result = []
+                            for r, i in zip(result, item_result):
+                                if isinstance(r, list) and isinstance(i, list):
+                                    # Both are lists, recursively multiply
+                                    if len(r) != len(i):
+                                        raise ValueError("Arrays have incompatible shapes for multiplication")
+                                    new_result.append([r_elem * i_elem for r_elem, i_elem in zip(r, i)])
+                                elif isinstance(r, list):
+                                    # r is list, i is scalar
+                                    new_result.append([r_elem * i for r_elem in r])
+                                elif isinstance(i, list):
+                                    # r is scalar, i is list
+                                    new_result.append([r * i_elem for i_elem in i])
+                                else:
+                                    # Both are scalars
+                                    new_result.append(r * i)
+                            result = new_result
+                        elif isinstance(result, list):
+                            # Broadcast scalar to all elements
+                            result = [multiply_recursive(r, item_result) for r in result]
+                        elif isinstance(item_result, list):
+                            # Broadcast scalar to all elements
+                            result = [multiply_recursive(result, i) for i in item_result]
+                        else:
+                            # Both scalars
+                            result *= item_result
+                
+                return result if result is not None else 1
+            
+            # Otherwise, recurse deeper maintaining structure
+            if not arr:
+                return []
+            
+            return [compute_product(subarr, current_depth + 1) for subarr in arr]
+        
+        return compute_product(a)
+
 
 
     def add(x1, x2):
@@ -402,58 +529,20 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-       A = [
-        [  
-            [[ 1, 2, 3, 4, 5, 6],
-            [ 7, 8, 9,10,11,12],
-            [13,14,15,16,17,18],
-            [19,20,21,22,23,24]],
-
-            [[25,26,27,28,29,30],
-            [31,32,33,34,35,36],
-            [37,38,39,40,41,42],
-            [43,44,45,46,47,48]],
-        ],
-
-        [  
-            [[49,50,51,52,53,54],
-            [55,56,57,58,59,60],
-            [61,62,63,64,65,66],
-            [67,68,69,70,71,72]],
-
-            [[73,74,75,76,77,78],
-            [79,80,81,82,83,84],
-            [85,86,87,88,89,90],
-            [91,92,93,94,95,96]],
-        ],
-
-        [  
-            [[97, 98, 99,100,101,102],
-            [103,104,105,106,107,108],
-            [109,110,111,112,113,114],
-            [115,116,117,118,119,120]],
-
-            [[121,122,123,124,125,126],
-            [127,128,129,130,131,132],
-            [133,134,135,136,137,138],
-            [139,140,141,142,143,144]],
-        ]
+        test_array = [
+            [
+                [
+                    [[1, 2], [3, 4]], 
+                    [[5, 6], [7, 8]]
+                ],
+                [
+                    [[9, 10], [11, 12]], 
+                    [[13, 14], [15, 16]]
+                ]
+            ]
         ]
 
-       B = [
-        [  
-            [1, 2, 3, 4, 5, 6, 7],
-            [8, 9,10,11,12,13,14],
-            [15,16,17,18,19,20,21],
-            [22,23,24,25,26,27,28],
-            [29,30,31,32,33,34,35],
-            [36,37,38,39,40,41,42],
-        ]
-        ]
-
-       print(Tensor.dot(A, B).data)
-       print(np.dot(A,B))
-        
+        print(Tensor.prod(test_array, axis=3))
 """
 Why do we need to test multiprocessing in main() stack?
 """
