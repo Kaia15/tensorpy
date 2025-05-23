@@ -317,77 +317,68 @@ class Tensor:
 
         return flat_data
 
-    def dot(x1: Union['Tensor', list, int], x2: Union['Tensor', list, int]) -> 'Tensor':
+    def iter_dot(A: Union['Tensor', list, int], B: Union['Tensor', list, int]) -> 'Tensor':
+        # A = (d1, d2,..., dk), B = (e1, e2, ..., el-2, el)
+        """
+        TO-DO
+        """
+    
+        if any([isinstance(x, int) for x in (A, B)]): 
+            bothScalar = isinstance(A, int) and isinstance(B, int)
+            if bothScalar: return A * B
 
-        if any([isinstance(x, int) for x in (x1, x2)]): 
-            bothScalar = isinstance(x1, int) and isinstance(x2, int)
-            if bothScalar: return x1 * x2
-
-            scalar = x1 if isinstance(x1, int) else x2
-            mat = x1 if not isinstance(x1, int) else x2 
+            scalar = A if isinstance(A, int) else B
+            mat = A if not isinstance(A, int) else B
             mat = mat.data if isinstance(mat, Tensor) else mat 
             m = Tensor._get_shape(mat)
 
             all_coors = Tensor._all_coords(m)
-            prod_data = [Tensor._get_value(c, mat) * scalar for c in all_coors]
-            return Tensor(prod_data)
+            init_zeros = Tensor.zeros(m).data
+            for c in all_coors:
+                Tensor._set_value(c, Tensor._get_value(c, mat) * scalar, init_zeros)
+            
+            return Tensor(init_zeros)
 
-        if isinstance(x1, list):
-            x1_shape = Tensor._get_shape(x1)
+        ATensor = isinstance(A, Tensor)
+        BTensor = isinstance(B, Tensor)
+
+        if ATensor:
+            Adata = A.data
+            sA = Tensor._get_shape(Adata)
         else:
-            x1_shape = Tensor._get_shape(x1.data)
+            sA = Tensor._get_shape(A)
+        dk = sA[-1]
 
-        if isinstance(x2, list):
-            x2_shape = Tensor._get_shape(x2)
+        if BTensor:
+            Bdata = B.data
+            sB = Tensor._get_shape(Bdata)
         else:
-            x2_shape = Tensor._get_shape(x2.data)
+            sB = Tensor._get_shape(B)
+        el2 = sB[-2]
 
-        # print (x1_shape, x2_shape)
+        # check whether dk matches el-1
+        if dk != el2:
+            raise ValueError(f"The last dimension of first matrix A does not match the second last dimension of second matrix B")
 
-        x1_data = x1.data if isinstance(x1, Tensor) else x1
-        x2_data = x2.data if isinstance(x2, Tensor) else x2
-
-        if len(x1_shape) == len(x2_shape) == 1:
-            total_prod = sum([r * c for r,c in zip(x1_data, x2_data)])
+        result_shape = list(sA[:-1]) + list(sB[:-2]) + [sB[-1]]
+        dimA = len(sA) 
+        dimB = len(sB)
+        if dimA == dimB == 1:
+            total_prod = sum([r * c for r,c in zip(Adata, Bdata)])
             return total_prod
 
-        if x1_shape[-1] != x2_shape[-2]: 
-            raise ValueError(f"Incompatible shapes for dot product")
+        all_coors = Tensor._fast_all_cords(tuple(result_shape))
+        init_zeros = Tensor.zeros(tuple(result_shape)).data
         
-        batch_shape = Tensor._broadcast_shape(x1_shape[:-2], x2_shape[:-2])
-        m, k = x1_shape[-2], x1_shape[-1]
-        n = x2_shape[-1]
-        final_shape = batch_shape + (m, n)
-        result = Tensor.zeros(final_shape).data
+        for c in all_coors:
+            prod_sum = 0
+            for j in range (dk):
+                cA = list(c[:dimA - 1]) + [j]
+                cB = list(c[dimA - 1: dimA - 1+ dimB - 2]) + [j] + [c[-1]]
+                prod_sum += Tensor._get_value(cA, A) * Tensor._get_value(cB, B)
+            Tensor._set_value(c, prod_sum, init_zeros)
 
-        # Generate all broadcasted batch indices
-        for batch_index in Tensor._all_coords(batch_shape):
-            for i in range(m):
-                for j in range(n):
-                    val = 0
-                    for kk in range(k):
-                        a_idx = tuple(batch_index + [i, kk])
-                        b_idx = tuple(batch_index + [kk, j])
-                        a_val = Tensor._get_value(a_idx, x1_data)
-                        b_val = Tensor._get_value(b_idx, x2_data)
-                        val += a_val * b_val
-                    Tensor._set_value(list(batch_index + [i,j]), val, result)
-
-        return Tensor(result)
-
-    def _broadcast_shape(a, b):
-        result = []
-        for dim_a, dim_b in zip_longest(reversed(a), reversed(b), fillvalue=1):
-            if dim_a == 1:
-                result.append(dim_b)
-            elif dim_b == 1:
-                result.append(dim_a)
-            elif dim_a == dim_b:
-                result.append(dim_a)
-            else:
-                raise ValueError(f"Cannot broadcast shapes {a} and {b}")
-        return tuple(reversed(result))
-
+        return Tensor(init_zeros)
 
     def recursive_prod(a: Union[list, 'Tensor'], axis: int = None) -> 'Tensor':
         """
@@ -517,22 +508,40 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-        test_array = [
-            [  
-                [  
-                    [[1, 2, 3], [4, 5, 6]],  
-                    [[7, 8, 9], [10, 11, 12]],
-                    [[13, 14, 15], [16, 17, 18]]
-                ],
-                [  
-                    [[19, 20, 21], [22, 23, 24]],
-                    [[25, 26, 27], [28, 29, 30]],
-                    [[31, 32, 33], [34, 35, 36]]
-                ]
-            ]
-        ]
+        # test_array = [
+        #     [  
+        #         [  
+        #             [[1, 2, 3], [4, 5, 6]],  
+        #             [[7, 8, 9], [10, 11, 12]],
+        #             [[13, 14, 15], [16, 17, 18]]
+        #         ],
+        #         [  
+        #             [[19, 20, 21], [22, 23, 24]],
+        #             [[25, 26, 27], [28, 29, 30]],
+        #             [[31, 32, 33], [34, 35, 36]]
+        #         ]
+        #     ]
+        # ]
 
-        print(Tensor.iter_prod(test_array, axis = 2).data)
+        # print(Tensor.iter_prod(test_array, axis = 2).data)
+
+        # A = [
+        #     [ [1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12] ],  # 1st 3x4 block
+        #     [ [13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24] ]  # 2nd 3x4 block
+        # ]
+
+        # B = [
+        #     [ [1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15], [16, 17, 18, 19, 20] ],  # 1st 4x5 block
+        #     [ [21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [31, 32, 33, 34, 35], [36, 37, 38, 39, 40] ]  # 2nd 4x5 block
+        # ]
+
+        # print (Tensor.iter_dot(A, B).data)
+
+        A1 = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
+        A1 = 2
+        B1 = [[1, 2], [3, 4], [5, 6]]
+
+        print (Tensor.iter_dot(A1, B1).data)
 """
 Why do we need to test multiprocessing in main() stack?
 """
