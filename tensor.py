@@ -388,62 +388,25 @@ class Tensor:
                 raise ValueError(f"Cannot broadcast shapes {a} and {b}")
         return tuple(reversed(result))
 
-    from typing import Union, List, Any
 
-    def prod(a: Union[list, 'Tensor'], axis: int = None) -> Union[int, float, List[Any]]:
+    def recursive_prod(a: Union[list, 'Tensor'], axis: int = None) -> 'Tensor':
         """
         Computes the product along a given axis for an n-dimensional array.
         Pure Python implementation that handles all cases correctly.
         """
-        # Helper function to flatten nested lists
-        def flatten(nested):
-            flat = []
-            for item in nested:
-                if isinstance(item, list):
-                    flat.extend(flatten(item))
-                else:
-                    flat.append(item)
-            return flat
-        
-        # Case 1: axis is None - compute product of all elements
-        if axis is None:
-            flat = flatten(a)
-            if not flat:
-                return 1
-            result = 1
-            for num in flat:
-                result *= num
-            return result
-        
-        # Helper function to get array dimensions (depth)
-        def get_ndim(arr):
-            if not isinstance(arr, list):
-                return 0
-            if not arr:
-                return 1  # Empty list is 1D
-            return 1 + get_ndim(arr[0])
-        
-        # Handle scalar input
-        if not isinstance(a, list):
-            if axis == 0 or axis == -1:
-                raise ValueError(f"axis {axis} out of bounds for array of dimension 0")
-            return a
-        
-        # Handle empty list
         if not a:
             if axis == 0 or axis == -1:
                 return 1
             raise ValueError(f"axis {axis} out of bounds for array of dimension 1")
         
-        ndim = get_ndim(a)
+        is_tensor = isinstance(a, Tensor)
+        if is_tensor:
+            a = a.data
         
-        # Normalize negative axis
-        if axis < 0:
-            axis = ndim + axis
-        
-        # Validate axis bounds
-        if axis < 0 or axis >= ndim:
-            raise ValueError(f"axis {axis} out of bounds for array of dimension {ndim}")
+        # get the innermost dimension of `a`
+        if not axis:
+            flatten_a = Tensor.flatten(a) if is_tensor else Tensor.flatten(Tensor(a))
+            return math.prod(flatten_a)
         
         # Helper function for recursive multiplication
         def multiply_recursive(a, b):
@@ -502,10 +465,8 @@ class Tensor:
                                     new_result.append(r * i)
                             result = new_result
                         elif isinstance(result, list):
-                            # Broadcast scalar to all elements
                             result = [multiply_recursive(r, item_result) for r in result]
                         elif isinstance(item_result, list):
-                            # Broadcast scalar to all elements
                             result = [multiply_recursive(result, i) for i in item_result]
                         else:
                             # Both scalars
@@ -513,15 +474,42 @@ class Tensor:
                 
                 return result if result is not None else 1
             
-            # Otherwise, recurse deeper maintaining structure
             if not arr:
                 return []
             
             return [compute_product(subarr, current_depth + 1) for subarr in arr]
         
-        return compute_product(a)
+        return Tensor(compute_product(a))
 
+    def iter_prod(a: Union[list, 'Tensor'], axis: int = None) -> 'Tensor':
+        if not a:
+            if axis == 0 or axis == -1:
+                return 1
+            raise ValueError(f"axis {axis} out of bounds for array of dimension 1")
+        
+        is_tensor = isinstance(a, Tensor)
+        if is_tensor:
+            a = a.data
+        
+        shape = Tensor._get_shape(a)
+        # get the innermost dimension of `a`
+        if not axis:
+            flatten_a = Tensor.flatten(a) if is_tensor else Tensor.flatten(Tensor(a))
+            return math.prod(flatten_a)
 
+        result_shape = shape[:axis] + shape[axis + 1:]
+        init_zeros = Tensor.zeros(result_shape).data
+        result_coors = Tensor._fast_all_cords(result_shape)
+
+        for c in result_coors:
+            product = 1
+            parse_c = list(c)
+            for j in range (shape[axis]):
+                full_c = parse_c[:axis] + [j] + parse_c[axis:]
+                product *= Tensor._get_value(full_c, a)
+            # R[i][j][k] = A[i][j][0][k] * A[i][j][1][k] *... * A[i][j][len(shape[axis]) - 1][k]
+            Tensor._set_value(c, product, init_zeros)
+        return Tensor(init_zeros)
 
     def add(x1, x2):
         pass
@@ -530,19 +518,21 @@ class Test:
     @staticmethod
     def unittest():
         test_array = [
-            [
-                [
-                    [[1, 2], [3, 4]], 
-                    [[5, 6], [7, 8]]
+            [  
+                [  
+                    [[1, 2, 3], [4, 5, 6]],  
+                    [[7, 8, 9], [10, 11, 12]],
+                    [[13, 14, 15], [16, 17, 18]]
                 ],
-                [
-                    [[9, 10], [11, 12]], 
-                    [[13, 14], [15, 16]]
+                [  
+                    [[19, 20, 21], [22, 23, 24]],
+                    [[25, 26, 27], [28, 29, 30]],
+                    [[31, 32, 33], [34, 35, 36]]
                 ]
             ]
         ]
 
-        print(Tensor.prod(test_array, axis=3))
+        print(Tensor.iter_prod(test_array, axis = 2).data)
 """
 Why do we need to test multiprocessing in main() stack?
 """
