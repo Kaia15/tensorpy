@@ -106,7 +106,11 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
       1.3:
 
       `C_{i1,..., ik-1, j1,..., jl-2} = \sum_{m}A_{i1,..., ik-1, m} . B_{j1, ..., jl-2, m, jl}`
-     
+
+     1.4: Example:
+
+     ![image](https://github.com/user-attachments/assets/670081dd-3249-4806-9384-5d46f5c76962)
+
 ### Mathematical Functions
 1. `.prod()`:
    - Generic Formula
