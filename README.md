@@ -86,7 +86,6 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 ### Linear Algebra
 1. `.dot(A, B)`:
    - Output the dot product of any two N-D arrays `A`, `B`
-   - `.iter_dot()`:
    - Example:
      ```
      A = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
@@ -110,12 +109,23 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      1.4: Example:
 
      ![image](https://github.com/user-attachments/assets/670081dd-3249-4806-9384-5d46f5c76962)
-
+  
+   - Corresponding method: `.iter_dot()`
+     
 ### Mathematical Functions
 1. `.prod()`:
-   - Generic Formula
-   - `.recursive_prod()`:
-   - `.iter_prod()`: 
+   - Generic Formula:
+     
+     1.1: Case 1: Empty array A
+     
+     1.2: Case 2: Non-empty array A with no axis
+     
+     1.3: Case 3: Find the product of A with the given axis
+     
+     `R[i][j][k] = A[i][j][0][k] * A[i][j][1][k] *... * A[i][j][len(shape[axis]) - 1][k]`
+     
+   - Corresponding method: `.recursive_prod()`, `.iter_prod()`
+     
 3. `.sum()`:
    - General Formula
    - Corresponding method: `.iter_sum()`
