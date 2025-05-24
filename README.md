@@ -40,6 +40,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
       Tensor.arange(0, 5, 1) # → [0, 1, 2, 3, 4]
       Tensor.arange(0.5, 2.0, 0.5) # → [0.5, 1.0, 1.5]
      ```
+   - Corresponding method: `.arange(args)`
    - **Challenge**: float arithmetic (floating points are covered -> rounding up after addition)
 
 2. `.reshape(a, newshape)`:
@@ -48,6 +49,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      ```
      Tensor.reshape([1,2,3,4], (2,2)) → [[1,2],[3,4]]
      ```
+   - Corresponding method: `.reshape()`
    - **Challenge**: check irregular/inconsistent input list
 
 3. `.ndarray.flat ~= .ndarray.flatten(order = 'C' | 'F')`:
@@ -66,6 +68,9 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
       Tensor([[1, 2], [3, 4]]).ndim() # → 2
       Tensor([1, 2, 3]).ndim() # → 1
      ```
+   - Corresponding methods:
+     - `.flatten(order = 'C', 'F)`:
+     - `.multi_processing_flatten(order = 'C', 'F')`
    
 5. `.ndarray.T ~= .ndarray.transpose(axes : tuple = Optional)`:
    - Example:
@@ -73,6 +78,9 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      Tensor([[1, 2], [3, 4]]).transpose() # → [[1, 3], [2, 4]]
      Tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]]).transpose((1, 0, 2)) # -> [[[1, 2], [5, 6]], [[3, 4], [7, 8]]]
      ```
+   - Corresponding methods:
+      - `.transpose()`:
+      - `.multi_processing_transpose()`:
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
 
 ### Linear Algebra
@@ -92,15 +100,19 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
    - `.recursive_prod()`:
    - `.iter_prod()`: 
 3. `.sum()`:
-4. `.lcm()`:
-5. `.gcd()`:
-6. `.add()`:
-7. `.divide()`:
-8. `.pow()`:
-9. `.subtract()`:
-10. `.max()`:
-11. `.min()`:
-12. `.sqrt()`:
+   - General Formula
+   - Corresponding method: `.iter_sum()`
+5. `.lcm()`:
+6. `.gcd()`:
+7. `.add()`:
+   - General Formula
+   - Corresponding method: `.add()`
+9. `.divide()`:
+10. `.pow()`:
+11. `.subtract()`:
+12. `.max()`:
+13. `.min()`:
+14. `.sqrt()`:
     
 ### Polynomials
 1. `.polyadd`:
