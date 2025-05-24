@@ -120,7 +120,8 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
         `A (d1, d2, ..., dm); B (e1, e2, ..., en)`
    
         - General Formula:
-          Element-wise operation: `C_{i1, i2, ..., ik} = A_{j1, j2, ..., jn} + B_{l1, l2, ..., lm}` 
+
+          `C_{i1, i2, ..., ik} = A_{j1, j2, ..., jn} + B_{l1, l2, ..., lm}` 
           
         - 7.3.1: Pad shapes with 1s to make A, B equally dimensional:
      
