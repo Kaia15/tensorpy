@@ -118,13 +118,16 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      7.3: Case 3: Both A and B are M-D array and N-D array:
      
         `A (d1, d2, ..., dm); B (e1, e2, ..., en)`
-     
+   
+        - General Formula:
+          `C_{i1}, C`
+          
         - 7.3.1: Pad shapes with 1s to make A, B equally dimensional:
      
           `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
      
         - 7.3.2: Find the final shape:
-        - 
+          
               **Rule 1**: For each `d_i` or `e_j` that is missing or equal to 1, we can treat it as 1 and select the higher-dimensional dimension of the other array, since in pure math, this aims to broadcast the final shape to get the higher dimension. For i.e:
              ```
                A (2,3) = [ [1,2,3] [4,5,6] ]
