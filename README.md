@@ -130,8 +130,11 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
    - Corresponding method: `.recursive_prod()`, `.iter_prod()`
      
-3. `.sum()`:
+3. `.sum()`: Similar to `.add()`
    - General Formula
+     
+     `R[i][j][k] = A[i][j][0][k] + A[i][j][1][k] +... + A[i][j][len(shape[axis]) - 1][k]`
+     
    - Corresponding method: `.iter_sum()`
 5. `.lcm()`:
 6. `.gcd()`:
