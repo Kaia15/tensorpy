@@ -111,7 +111,9 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      
      7.2: Case 2: Either A or B is scalar:
      
-        `A(i, j, ..., m) = A(i, j, ..., m) + B`, given `s = A's shape, 0 <= i < s[0], 0 <= j < s[1], etc`
+        `A(i, j, ..., m) = A(i, j, ..., m) + B`, given:
+     
+        `s = A's shape, 0 <= i < s[0], 0 <= j < s[1], etc`
      
      7.3: Case 3: Both A and B are M-D array and N-D array:
      
