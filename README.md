@@ -85,7 +85,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 ### Linear Algebra
 1. `.dot(A, B)`:
-   - Output the dot product of any 2 N-D arrays `A`, `B`
+   - Output the dot product of any two N-D arrays `A`, `B`
    - `.iter_dot()`:
    - Example:
      ```
@@ -94,6 +94,18 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      -> A . B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
      ```
    - Generic Formula
+      1.1: **Condition**:
+     
+      `dk`(*last dimension* of `A`) **must match** `el-1` (*second-to-last dimension* of `B`)
+     
+      1.2: Final shape:
+     
+      `(d1, ..., dk-1, e1, ..., el-2, el)` (remove matching dimension `dk`)
+     
+      1.3:
+
+      `C_{i1,..., ik-1, j1,..., jl-2} = \sum_{m}A_{i1,..., ik-1, m} . B_{j1, ..., jl-2, m, jl}`
+     
 ### Mathematical Functions
 1. `.prod()`:
    - Generic Formula
