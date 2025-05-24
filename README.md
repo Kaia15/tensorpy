@@ -106,13 +106,18 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 6. `.gcd()`:
 7. `.add(A, B)`:
    - General Formula:
+     
      7.1: Case 1: Both A and B are scalar, return `A + B`
+     
      7.2: Case 2: Either A or B is scalar:
         `A(i, j, ..., m) = A(i, j, ..., m) + B`, given `s = A's shape, 0 <= i < s[0], 0 <= j < s[1], etc`
+     
      7.3: Case 3: Both A and B are M-D array and N-D array:
         `A (d1, d2, ..., dm); B (e1, e2, ..., en)`
+     
         7.3.1: Pad shapes with 1s to make A, B equally dimensional:
               `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
+     
         7.3.2: Find the output shape:
               - 
         
