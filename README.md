@@ -93,7 +93,8 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      B = [[1, 2], [3, 4], [5, 6]]
      -> A . B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
      ```
-   - Generic Formula
+   - Generic Formula:
+     
       1.1: **Condition**:
      
       `dk`(*last dimension* of `A`) **must match** `el-1` (*second-to-last dimension* of `B`)
