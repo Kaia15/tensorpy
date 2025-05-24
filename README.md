@@ -76,26 +76,31 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
 
 ### Linear Algebra
-1. `.dot(x1, x2)`:
-   - Output the dot product of any 2 N-D arrays `x1`, `x2`
+1. `.dot(A, B)`:
+   - Output the dot product of any 2 N-D arrays `A`, `B`
+   - `.iter_dot()`:
    - Example:
      ```
      A = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
      B = [[1, 2], [3, 4], [5, 6]]
-     -> A x B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
+     -> A . B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
      ```
+   - Generic Formula
 ### Mathematical Functions
 1. `.prod()`:
-2. `.sum()`:
-3. `.lcm()`:
-4. `.gcd()`:
-5. `.add()`:
-6. `.divide()`:
-7. `.pow()`:
-8. `.subtract()`:
-9. `.max()`:
-10. `.min()`:
-11. `.sqrt()`:
+   - Generic Formula
+   - `.recursive_prod()`:
+   - `.iter_prod()`: 
+3. `.sum()`:
+4. `.lcm()`:
+5. `.gcd()`:
+6. `.add()`:
+7. `.divide()`:
+8. `.pow()`:
+9. `.subtract()`:
+10. `.max()`:
+11. `.min()`:
+12. `.sqrt()`:
     
 ### Polynomials
 1. `.polyadd`:
