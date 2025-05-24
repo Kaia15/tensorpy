@@ -124,6 +124,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
           `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
      
         - 7.3.2: Find the final shape:
+        - 
               **Rule 1**: For each `d_i` or `e_j` that is missing or equal to 1, we can treat it as 1 and select the higher-dimensional dimension of the other array, since in pure math, this aims to broadcast the final shape to get the higher dimension. For i.e:
              ```
                A (2,3) = [ [1,2,3] [4,5,6] ]
@@ -135,10 +136,13 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
              A (+) B = [ [1,2,3] [4,5,6] ] (+) [ [1,2,3]
                                                  [1,2,3] ]
              ```
+             
              **Rule 2**: For any pair of matching dimensions between `A` and `B`, we select this dimension for our final shape.
       
         - 7.3.3: Get the indices from the final shape:
+          
              **Rule 3**: For the dimension that is broadcast, add `0` to the corresponding index of the coordinate.
+          
              **Rule 4**: To find the actual coordinates in the original `A` and `B`, remove the padded 1(s) out of the final coordinates (which are previously generated from the final shape of the result tensor).
           
    - Corresponding method: `.add()`
