@@ -106,7 +106,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
       `C_{i1,..., ik-1, j1,..., jl-2} = \sum_{m}A_{i1,..., ik-1, m} . B_{j1, ..., jl-2, m, jl}`
 
-     1.4: Example:
+     1.3.1: Example:
 
      ![image](https://github.com/user-attachments/assets/670081dd-3249-4806-9384-5d46f5c76962)
   
@@ -123,7 +123,11 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      1.3: Case 3: Find the product of A with the given axis
      
      `R[i][j][k] = A[i][j][0][k] * A[i][j][1][k] *... * A[i][j][len(shape[axis]) - 1][k]`
-     
+
+     1.3.1: Example:
+
+     ![image](https://github.com/user-attachments/assets/9ad47b53-21e3-4d46-8ff1-9dd9d79e86a8)
+
    - Corresponding method: `.recursive_prod()`, `.iter_prod()`
      
 3. `.sum()`:
