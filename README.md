@@ -119,11 +119,11 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      
         `A (d1, d2, ..., dm); B (e1, e2, ..., en)`
      
-        7.3.1: Pad shapes with 1s to make A, B equally dimensional:
+        - 7.3.1: Pad shapes with 1s to make A, B equally dimensional:
      
-        `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
+         `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
      
-        7.3.2: Find the output shape:
+        - 7.3.2: Find the output shape:
               - 
         
    - Corresponding method: `.add()`
