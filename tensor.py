@@ -565,21 +565,21 @@ class Tensor:
             sB = (1,) * (dimA - dimB) + sB
         
         # Determine output shape via broadcasting rules
-        output_shape = []
+        result_shape = []
         for a, b in zip(sA, sB):
             if a == b:
-                output_shape.append(a)
+                result_shape.append(a)
             elif a == 1:
-                output_shape.append(b)
+                result_shape.append(b)
             elif b == 1:
-                output_shape.append(a)
+                result_shape.append(a)
             else:
                 raise ValueError(f"Shapes {sA} and {sB} are not broadcastable")
         
-        result = Tensor.zeros(output_shape)
+        result = Tensor.zeros(result_shape)
         
         # Perform broadcasted addition
-        for coor in Tensor._all_coords(output_shape):
+        for coor in Tensor._all_coords(result_shape):
             # Get indices for A and B with broadcasting
             a_index = []
             b_index = []
