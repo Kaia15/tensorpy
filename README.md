@@ -192,7 +192,7 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 14. `.sqrt()`:
 15. `.positive()`:
 16. `.negative()`: 
-   - Hint: look at `__repr()__` function to represent unary minus operator
+   - Hint: look at **magic methods** in Python to represent unary minus operator
 17. `.logical_and()`:
 18. `.logical_or()`:
     
