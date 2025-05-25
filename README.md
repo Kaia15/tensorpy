@@ -193,6 +193,10 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 15. `.positive()`:
 16. `.negative()`: 
    - Hint: look at **magic methods** in Python to represent unary minus operator
+   - ```
+     print(dir(int))
+     # Output: ['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '_...]
+     ```
 17. `.logical_and()`:
 18. `.logical_or()`:
     
