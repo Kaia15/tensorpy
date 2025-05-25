@@ -85,22 +85,56 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 
 ### Linear Algebra
 1. `.dot(A, B)`:
-   - Output the dot product of any 2 N-D arrays `A`, `B`
-   - `.iter_dot()`:
+   - Output the dot product of any two N-D arrays `A`, `B`
    - Example:
      ```
      A = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
      B = [[1, 2], [3, 4], [5, 6]]
      -> A . B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
      ```
-   - Generic Formula
+   - Generic Formula:
+     
+      1.1: **Condition**:
+     
+      `dk`(*last dimension* of `A`) **must match** `el-1` (*second-to-last dimension* of `B`)
+     
+      1.2: Final shape:
+     
+      `(d1, ..., dk-1, e1, ..., el-2, el)` (remove matching dimension `dk`)
+     
+      1.3:
+
+      `C_{i1,..., ik-1, j1,..., jl-2} = \sum_{m}A_{i1,..., ik-1, m} . B_{j1, ..., jl-2, m, jl}`
+
+     1.3.1: Example:
+
+     ![image](https://github.com/user-attachments/assets/670081dd-3249-4806-9384-5d46f5c76962)
+  
+   - Corresponding method: `.iter_dot()`
+     
 ### Mathematical Functions
 1. `.prod()`:
-   - Generic Formula
-   - `.recursive_prod()`:
-   - `.iter_prod()`: 
-3. `.sum()`:
+   - Generic Formula:
+     
+     1.1: Case 1: Empty array A
+     
+     1.2: Case 2: Non-empty array A with no axis
+     
+     1.3: Case 3: Find the product of A with the given axis
+     
+     `R[i][j][k] = A[i][j][0][k] * A[i][j][1][k] *... * A[i][j][len(shape[axis]) - 1][k]`
+
+     1.3.1: Example:
+
+     ![image](https://github.com/user-attachments/assets/9ad47b53-21e3-4d46-8ff1-9dd9d79e86a8)
+
+   - Corresponding method: `.recursive_prod()`, `.iter_prod()`
+     
+3. `.sum()`: Similar to `.prod()`
    - General Formula
+     
+     `R[i][j][k] = A[i][j][0][k] + A[i][j][1][k] +... + A[i][j][len(shape[axis]) - 1][k]`
+     
    - Corresponding method: `.iter_sum()`
 5. `.lcm()`:
 6. `.gcd()`:
@@ -118,14 +152,37 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
      7.3: Case 3: Both A and B are M-D array and N-D array:
      
         `A (d1, d2, ..., dm); B (e1, e2, ..., en)`
-     
+   
+        - General Formula:
+
+          `C_{i1, i2, ..., ik} = A_{j1, j2, ..., jn} + B_{l1, l2, ..., lm}` 
+          
         - 7.3.1: Pad shapes with 1s to make A, B equally dimensional:
      
           `sA = (1,1,..,d1,...,dm); sB = (1,1,..., e1,..., en)`
      
-        - 7.3.2: Find the output shape:
-              - 
-        
+        - 7.3.2: Find the final shape: 
+              **Rule 1**: For each `d_i` or `e_j` that is missing or equal to 1, we can treat it as 1 and select the higher-dimensional dimension of the other array, since in pure math, this aims to broadcast the final shape to get the higher dimension. For i.e:
+          
+             ```
+               A (2,3) = [ [1,2,3] [4,5,6] ]
+               B (3,) = [1,2,3]
+             ```
+             - The final shape is `(2,3)` since `B` is **broadcasted** to shape (1,3) then (2,3)
+             - After broadcasting, we have:
+             ```
+             A (+) B = [ [1,2,3] [4,5,6] ] (+) [ [1,2,3]
+                                                 [1,2,3] ]
+             ```
+             
+             **Rule 2**: For any pair of matching dimensions between `A` and `B`, we select this dimension for our final shape.
+      
+        - 7.3.3: Get the indices from the final shape:
+          
+             **Rule 3**: For the dimension that is broadcast, add `0` to the corresponding index of the coordinate.
+          
+             **Rule 4**: To find the actual coordinates in the original `A` and `B`, remove the padded 1(s) out of the final coordinates (which are previously generated from the final shape of the result tensor).
+          
    - Corresponding method: `.add()`
 9. `.divide()`:
 10. `.pow()`:
