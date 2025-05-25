@@ -193,10 +193,21 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 15. `.positive()`:
 16. `.negative()`: 
    - Hint: look at `__repr()__` function to represent unary minus operator
+17. `.logical_and()`:
+18. `.logical_or()`:
     
 ### Polynomials
 1. `.polyadd`:
 2. `.polymul`:
+
+### Input and Output
+1. `.load()`
+2. `.save()`
+
+### Sorting, Searching, and Counting
+1. `.sort()`
+2. `.partition()`
+3. `.where()`
 
 ### Screenshots
 
