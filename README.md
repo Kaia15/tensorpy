@@ -190,6 +190,9 @@ A lightweight, educational implementation of NumPy-like functionality in pure Py
 12. `.max()`:
 13. `.min()`:
 14. `.sqrt()`:
+15. `.positive()`:
+16. `.negative()`: 
+   - Hint: look at `__repr()__` function to represent unary minus operator
     
 ### Polynomials
 1. `.polyadd`:
