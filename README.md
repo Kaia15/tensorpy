@@ -1,5 +1,5 @@
 # TensorPy
-A lightweight, educational implementation of NumPy-like functionality in pure Python.
+TensorPy is a lightweight, NumPy-inspired numerical computing library that offers a simplified and customizable array-processing framework. Built for prototyping and experimentation, TensorPy implements key features like array creation, reshaping, linear algebra operations, mathematical functions, and broadcasting, while highlighting internal logic and computation details.
 
 ## Requirements
 
