@@ -681,6 +681,31 @@ class Tensor:
         
         return result   
     
+    def positive():
+        """
+        TO-DO
+        """
+        pass
+
+    def __neg__(self):
+        def negative(a):
+            """
+            """
+            is_tensor = isinstance(a, Tensor)
+            if not is_tensor:
+                if isinstance(a, float) or isinstance(a, int):
+                    return (-1) * a 
+                 
+            sh = a.shape if is_tensor else Tensor._get_shape(a)
+            adata = a.data if is_tensor else a
+            all_coors = Tensor._all_coords(sh)
+            for c in all_coors:
+                val = Tensor._get_value(c, adata)
+                Tensor._set_value(c, (-1) * val, adata)
+            return adata
+        return Tensor(negative(self.data))
+
+
 class Test:
     @staticmethod
     def unittest():
@@ -741,19 +766,6 @@ class Test:
         ]  # Shape (1, 2, 1)
         print (Tensor.add(A, B).data)
 
-        # A = [
-        #     [  # Block 0
-        #         [1, 2, 3, 4],
-        #         [5, 6, 7, 8],
-        #         [9, 10, 11, 12]
-        #     ],
-        #     [  # Block 1
-        #         [13, 14, 15, 16],
-        #         [17, 18, 19, 20],
-        #         [21, 22, 23, 24]
-        #     ]
-        # ]
-
         # B = [
         #     [100, 200, 300, 400],  # Row 0
         #     [500, 600, 700, 800]   # Row 1
@@ -764,6 +776,27 @@ class Test:
         A = 4
         B = 6
         print (Tensor.lcm(A,B))
+
+        A = [
+            [  # Block 0
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12]
+            ],
+            [  # Block 1
+                [13, 14, 15, 16],
+                [17, 18, 19, 20],
+                [21, 22, 23, 24]
+            ]
+        ]
+
+        A5 = Tensor(A)
+        A6 = -A5
+        print (A6.data)
+
+        A = 4
+        A7 = -A
+        print (A7)
 
 """
 Why do we need to test multiprocessing in main() stack?
