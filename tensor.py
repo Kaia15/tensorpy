@@ -369,109 +369,108 @@ class Tensor:
 
         return Tensor(init_zeros)
 
-    def recursive_prod(a: Union[list, 'Tensor'], axis: int = None) -> 'Tensor':
-        """
-        Computes the product along a given axis for an n-dimensional array.
-        Pure Python implementation that handles all cases correctly.
-        """
-        if not a:
-            if axis == 0 or axis == -1:
-                return 1
-            raise ValueError(
-                f"axis {axis} out of bounds for array of dimension 1")
+    # def recursive_prod(a: Union[list, 'Tensor'], axis: int = None) -> 'Tensor':
+    #     """
+    #     Computes the product along a given axis for an n-dimensional array.
+    #     Pure Python implementation that handles all cases correctly.
+    #     """
+    #     if not a:
+    #         if axis == 0 or axis == -1:
+    #             return 1
+    #         raise ValueError(
+    #             f"axis {axis} out of bounds for array of dimension 1")
 
-        is_tensor = isinstance(a, Tensor)
-        if is_tensor:
-            a = a.data
+    #     is_tensor = isinstance(a, Tensor)
+    #     if is_tensor:
+    #         a = a.data
 
-        # get the innermost dimension of `a`
-        if not axis:
-            flatten_a = Tensor.flatten(
-                a) if is_tensor else Tensor.flatten(Tensor(a))
-            return math.prod(flatten_a)
+    #     # get the innermost dimension of `a`
+    #     if not axis:
+    #         flatten_a = Tensor.flatten(Tensor(a), 'C')
+    #         return math.prod(flatten_a)
 
-        # Helper function for recursive multiplication
-        def multiply_recursive(a, b):
-            """Recursively multiply two elements that could be scalars or nested lists"""
-            if isinstance(a, list) and isinstance(b, list):
-                if len(a) != len(b):
-                    raise ValueError(
-                        "Arrays have incompatible shapes for multiplication")
-                return [multiply_recursive(a_elem, b_elem) for a_elem, b_elem in zip(a, b)]
-            elif isinstance(a, list):
-                return [multiply_recursive(a_elem, b) for a_elem in a]
-            elif isinstance(b, list):
-                return [multiply_recursive(a, b_elem) for b_elem in b]
-            else:
-                return a * b
+    #     # Helper function for recursive multiplication
+    #     def multiply_recursive(a, b):
+    #         """Recursively multiply two elements that could be scalars or nested lists"""
+    #         if isinstance(a, list) and isinstance(b, list):
+    #             if len(a) != len(b):
+    #                 raise ValueError(
+    #                     "Arrays have incompatible shapes for multiplication")
+    #             return [multiply_recursive(a_elem, b_elem) for a_elem, b_elem in zip(a, b)]
+    #         elif isinstance(a, list):
+    #             return [multiply_recursive(a_elem, b) for a_elem in a]
+    #         elif isinstance(b, list):
+    #             return [multiply_recursive(a, b_elem) for b_elem in b]
+    #         else:
+    #             return a * b
 
-        # Recursive product computation
-        def compute_product(arr, current_depth=0):
-            # If we're not at a list, we have a scalar
-            if not isinstance(arr, list):
-                return arr
+    #     # Recursive product computation
+    #     def compute_product(arr, current_depth=0):
+    #         # If we're not at a list, we have a scalar
+    #         if not isinstance(arr, list):
+    #             return arr
 
-            # If we're at the target axis depth, compute product of this level
-            if current_depth == axis:
-                if not arr:
-                    return 1
+    #         # If we're at the target axis depth, compute product of this level
+    #         if current_depth == axis:
+    #             if not arr:
+    #                 return 1
 
-                # All elements at this level should be processed
-                result = None
-                for item in arr:
-                    item_result = compute_product(item, current_depth + 1)
+    #             # All elements at this level should be processed
+    #             result = None
+    #             for item in arr:
+    #                 item_result = compute_product(item, current_depth + 1)
 
-                    if result is None:
-                        result = item_result
-                    else:
-                        # Handle multiplication of different types
-                        if isinstance(result, list) and isinstance(item_result, list):
-                            # Element-wise multiplication for lists
-                            if len(result) != len(item_result):
-                                raise ValueError(
-                                    "Arrays have incompatible shapes for multiplication")
-                            # Recursively multiply corresponding elements
-                            new_result = []
-                            for r, i in zip(result, item_result):
-                                if isinstance(r, list) and isinstance(i, list):
-                                    # Both are lists, recursively multiply
-                                    if len(r) != len(i):
-                                        raise ValueError(
-                                            "Arrays have incompatible shapes for multiplication")
-                                    new_result.append(
-                                        [r_elem * i_elem for r_elem, i_elem in zip(r, i)])
-                                elif isinstance(r, list):
-                                    # r is list, i is scalar
-                                    new_result.append(
-                                        [r_elem * i for r_elem in r])
-                                elif isinstance(i, list):
-                                    # r is scalar, i is list
-                                    new_result.append(
-                                        [r * i_elem for i_elem in i])
-                                else:
-                                    # Both are scalars
-                                    new_result.append(r * i)
-                            result = new_result
-                        elif isinstance(result, list):
-                            result = [multiply_recursive(
-                                r, item_result) for r in result]
-                        elif isinstance(item_result, list):
-                            result = [multiply_recursive(
-                                result, i) for i in item_result]
-                        else:
-                            # Both scalars
-                            result *= item_result
+    #                 if result is None:
+    #                     result = item_result
+    #                 else:
+    #                     # Handle multiplication of different types
+    #                     if isinstance(result, list) and isinstance(item_result, list):
+    #                         # Element-wise multiplication for lists
+    #                         if len(result) != len(item_result):
+    #                             raise ValueError(
+    #                                 "Arrays have incompatible shapes for multiplication")
+    #                         # Recursively multiply corresponding elements
+    #                         new_result = []
+    #                         for r, i in zip(result, item_result):
+    #                             if isinstance(r, list) and isinstance(i, list):
+    #                                 # Both are lists, recursively multiply
+    #                                 if len(r) != len(i):
+    #                                     raise ValueError(
+    #                                         "Arrays have incompatible shapes for multiplication")
+    #                                 new_result.append(
+    #                                     [r_elem * i_elem for r_elem, i_elem in zip(r, i)])
+    #                             elif isinstance(r, list):
+    #                                 # r is list, i is scalar
+    #                                 new_result.append(
+    #                                     [r_elem * i for r_elem in r])
+    #                             elif isinstance(i, list):
+    #                                 # r is scalar, i is list
+    #                                 new_result.append(
+    #                                     [r * i_elem for i_elem in i])
+    #                             else:
+    #                                 # Both are scalars
+    #                                 new_result.append(r * i)
+    #                         result = new_result
+    #                     elif isinstance(result, list):
+    #                         result = [multiply_recursive(
+    #                             r, item_result) for r in result]
+    #                     elif isinstance(item_result, list):
+    #                         result = [multiply_recursive(
+    #                             result, i) for i in item_result]
+    #                     else:
+    #                         # Both scalars
+    #                         result *= item_result
 
-                return result if result is not None else 1
+    #             return result if result is not None else 1
 
-            if not arr:
-                return []
+    #         if not arr:
+    #             return []
 
-            return [compute_product(subarr, current_depth + 1) for subarr in arr]
+    #         return [compute_product(subarr, current_depth + 1) for subarr in arr]
 
-        return Tensor(compute_product(a))
+    #     return Tensor(compute_product(a))
 
-    def iter_prod(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor', int]:
+    def prod(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor', int]:
         """
         TO-DO
         """
@@ -488,8 +487,7 @@ class Tensor:
         shape = Tensor._get_shape(a)
         # get the innermost dimension of `a`
         if axis == None:
-            flatten_a = Tensor.flatten(
-                a, 'C') if is_tensor else Tensor.flatten(Tensor(a), 'C')
+            flatten_a = Tensor.flatten(Tensor(a), 'C')
             return math.prod(flatten_a)
 
         result_shape = shape[:axis] + shape[axis + 1:]
@@ -524,8 +522,7 @@ class Tensor:
 
         # get the innermost dimension of `a`
         if axis == None:
-            flatten_a = Tensor.flatten(
-                a, 'C') if is_tensor else Tensor.flatten(Tensor(a), 'C')
+            flatten_a = Tensor.flatten(Tensor(a), 'C')
             return sum(flatten_a)
 
         result_shape = shape[:axis] + shape[axis + 1:]

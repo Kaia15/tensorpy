@@ -171,8 +171,6 @@ class Test(unittest.TestCase):
             (1, 1, 9)     # 2D to 3D
         ]
 
-        # print (type(self.tensor_1d))
-        
         # Test with 1D tensor/array
         for shape in test_shapes[:3]:  # First three shapes are compatible with 1D
             np_reshaped = np.reshape(self.np_1d, shape)
@@ -304,8 +302,6 @@ class Test(unittest.TestCase):
             # Using matmul for batch matrix multiplication
             np_dot_complex = np.dot(np_A, np_B)
             tensor_dot_complex = Tensor.iter_dot(tensor_A, tensor_B)
-            print (tensor_dot_complex.data)
-            print (np_dot_complex)
             
             # Convert tensor data back to numpy for comparison
             tensor_as_np = np.array(tensor_dot_complex.data)
@@ -315,6 +311,259 @@ class Test(unittest.TestCase):
             # If your implementation doesn't support this operation, just skip this test
             print(f"Skipping complex dot test: {e}")
     
-    
+    def test_prod(self):
+        """Test Tensor.prod against np.prod."""
+        # Test prod with no axis (all elements)
+        np_prod_1d_all = np.prod(self.np_1d)
+        tensor_prod_1d_all = Tensor.prod(self.tensor_1d)
+        self.assertEqual(np_prod_1d_all, tensor_prod_1d_all)
+        
+        np_prod_2d_all = np.prod(self.np_2d)
+        tensor_prod_2d_all = Tensor.prod(self.tensor_2d)
+        self.assertEqual(np_prod_2d_all, tensor_prod_2d_all)
+        
+        np_prod_3d_all = np.prod(self.np_3d)
+        tensor_prod_3d_all = Tensor.prod(self.tensor_3d)
+        self.assertEqual(np_prod_3d_all, tensor_prod_3d_all)
+        
+        # Test prod along specific axes
+        # 2D array tests
+        for axis in [0, 1]:
+            np_prod_2d_axis = np.prod(self.np_2d, axis=axis)
+            tensor_prod_2d_axis = Tensor.prod(self.tensor_2d, axis=axis)
+            
+            # Convert tensor result to numpy
+            tensor_as_np = np.array(tensor_prod_2d_axis.data)
+            
+            self.assertTrue(np.array_equal(np_prod_2d_axis, tensor_as_np),
+                          f"Product along axis {axis} failed for 2D array")
+        
+        # 3D array tests
+        for axis in [0, 1, 2]:
+            np_prod_3d_axis = np.prod(self.np_3d, axis=axis)
+            tensor_prod_3d_axis = Tensor.prod(self.tensor_3d, axis=axis)
+            
+            # Convert tensor result to numpy
+            tensor_as_np = np.array(tensor_prod_3d_axis.data)
+            
+            self.assertTrue(np.array_equal(np_prod_3d_axis, tensor_as_np),
+                          f"Product along axis {axis} failed for 3D array")
+        
+        # Test with larger test case
+        test_4d = [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[9, 10], [11, 12]], [[13, 14], [15, 16]]]]
+        np_4d = np.array(test_4d)
+        tensor_4d = Tensor(test_4d)
+        
+        # Test axis=2 for 4D array
+        np_prod_4d_axis2 = np.prod(np_4d, axis=2)
+        tensor_prod_4d_axis2 = Tensor.prod(tensor_4d, axis=2)
+        
+        tensor_as_np = np.array(tensor_prod_4d_axis2.data)
+        self.assertTrue(np.array_equal(np_prod_4d_axis2, tensor_as_np))
+
+    # def test_recursive_prod(self):
+    #     """Test Tensor.recursive_prod against np.prod."""
+    #     # Test prod with no axis (all elements)
+    #     np_prod_1d_all = np.prod(self.np_1d)
+    #     tensor_prod_1d_all = Tensor.recursive_prod(self.tensor_1d)
+    #     self.assertEqual(np_prod_1d_all, tensor_prod_1d_all)
+        
+    #     np_prod_2d_all = np.prod(self.np_2d)
+    #     tensor_prod_2d_all = Tensor.recursive_prod(self.tensor_2d)
+    #     self.assertEqual(np_prod_2d_all, tensor_prod_2d_all)
+        
+    #     # Test prod along specific axes
+    #     for axis in [0, 1]:
+    #         np_prod_2d_axis = np.prod(self.np_2d, axis=axis)
+    #         tensor_prod_2d_axis = Tensor.recursive_prod(self.tensor_2d, axis=axis)
+    #         print (np_prod_2d_axis, tensor_prod_2d_axis)
+            
+    #         # Convert tensor result to numpy
+    #         tensor_as_np = np.array(tensor_prod_2d_axis.data) if isinstance(tensor_prod_2d_axis, Tensor) else tensor_prod_2d_axis
+            
+    #         self.assertTrue(np.array_equal(np_prod_2d_axis, tensor_as_np),
+    #                       f"Recursive product along axis {axis} failed for 2D array")
+
+    def test_iter_sum(self):
+        """Test Tensor.iter_sum against np.sum."""
+        # Test sum with no axis (all elements)
+        np_sum_1d_all = np.sum(self.np_1d)
+        tensor_sum_1d_all = Tensor.iter_sum(self.tensor_1d)
+        self.assertEqual(np_sum_1d_all, tensor_sum_1d_all)
+        
+        np_sum_2d_all = np.sum(self.np_2d)
+        tensor_sum_2d_all = Tensor.iter_sum(self.tensor_2d)
+        self.assertEqual(np_sum_2d_all, tensor_sum_2d_all)
+        
+        np_sum_3d_all = np.sum(self.np_3d)
+        tensor_sum_3d_all = Tensor.iter_sum(self.tensor_3d)
+        self.assertEqual(np_sum_3d_all, tensor_sum_3d_all)
+        
+        # Test sum along specific axes
+        # 2D array tests
+        for axis in [0, 1]:
+            np_sum_2d_axis = np.sum(self.np_2d, axis=axis)
+            tensor_sum_2d_axis = Tensor.iter_sum(self.tensor_2d, axis=axis)
+            
+            # Convert tensor result to numpy
+            tensor_as_np = np.array(tensor_sum_2d_axis.data)
+            
+            self.assertTrue(np.array_equal(np_sum_2d_axis, tensor_as_np),
+                          f"Sum along axis {axis} failed for 2D array")
+        
+        # 3D array tests
+        for axis in [0, 1, 2]:
+            np_sum_3d_axis = np.sum(self.np_3d, axis=axis)
+            tensor_sum_3d_axis = Tensor.iter_sum(self.tensor_3d, axis=axis)
+            
+            # Convert tensor result to numpy
+            tensor_as_np = np.array(tensor_sum_3d_axis.data)
+            
+            self.assertTrue(np.array_equal(np_sum_3d_axis, tensor_as_np),
+                          f"Sum along axis {axis} failed for 3D array")
+
+    def test_add(self):
+        """Test Tensor.add against np.add and broadcasting."""
+        # Test scalar + scalar
+        self.assertEqual(Tensor.add(5, 3), 8)
+        
+        # Test scalar + array
+        scalar = 10
+        np_scalar_add = self.np_1d + scalar
+        tensor_scalar_add = Tensor.add(scalar, self.tensor_1d)
+        tensor_as_np = np.array(tensor_scalar_add.data)
+        self.assertTrue(np.array_equal(np_scalar_add, tensor_as_np))
+        
+        # Test array + array (same shape)
+        np_add_same = self.np_1d + self.np_1d
+        tensor_add_same = Tensor.add(self.tensor_1d, self.tensor_1d)
+        tensor_as_np = np.array(tensor_add_same.data)
+        self.assertTrue(np.array_equal(np_add_same, tensor_as_np))
+        
+        # Test broadcasting cases
+        # Case 1: (3, 1) + (1, 3) -> (3, 3)
+        A = [[1], [2], [3]]
+        B = [[4, 5, 6]]
+        np_A = np.array(A)
+        np_B = np.array(B)
+        
+        np_broadcast_add = np_A + np_B
+        tensor_broadcast_add = Tensor.add(A, B)
+        tensor_as_np = np.array(tensor_broadcast_add.data)
+        
+        self.assertTrue(np.array_equal(np_broadcast_add, tensor_as_np))
+        
+        # Case 2: More complex broadcasting (1, 1, 3) + (1, 2, 1) -> (1, 2, 3)
+        A = [[[1, 2, 3]]]
+        B = [[[4], [5]]]
+        np_A = np.array(A)
+        np_B = np.array(B)
+        
+        np_broadcast_add2 = np_A + np_B
+        tensor_broadcast_add2 = Tensor.add(A, B)
+        tensor_as_np2 = np.array(tensor_broadcast_add2.data)
+        
+        self.assertTrue(np.array_equal(np_broadcast_add2, tensor_as_np2))
+        
+        # Test incompatible shapes (should raise ValueError)
+        A = [[1, 2, 3], [4, 5, 6]]  # (2, 3)
+        B = [[1, 2], [3, 4]]        # (2, 2)
+        
+        with self.assertRaises(ValueError):
+            Tensor.add(A, B)
+
+    def test_lcm(self):
+        """Test Tensor.lcm against math.lcm and broadcasting."""
+        # Test scalar LCM
+        self.assertEqual(Tensor.lcm(4, 6), math.lcm(4, 6))  # Should be 12
+        self.assertEqual(Tensor.lcm(12, 18), math.lcm(12, 18))  # Should be 36
+        
+        # Test scalar + array LCM
+        scalar = 6
+        A = [2, 3, 4, 5]
+        expected = [math.lcm(scalar, x) for x in A]
+        
+        tensor_lcm = Tensor.lcm(scalar, A)
+        result = tensor_lcm.data if isinstance(tensor_lcm, Tensor) else [tensor_lcm]
+        
+        self.assertEqual(result, expected)
+        
+        # Test array + array LCM (same shape)
+        A = [2, 4, 6, 8]
+        B = [3, 6, 9, 12]
+        expected = [math.lcm(a, b) for a, b in zip(A, B)]
+        
+        tensor_lcm = Tensor.lcm(A, B)
+        tensor_as_list = tensor_lcm.data if isinstance(tensor_lcm, Tensor) else [tensor_lcm]
+        
+        self.assertEqual(tensor_as_list, expected)
+        
+        # Test broadcasting with LCM
+        A = [[2], [3], [4]]  # (3, 1)
+        B = [[6, 9, 12]]     # (1, 3)
+        
+        expected = []
+        for i in range(3):
+            row = []
+            for j in range(3):
+                row.append(math.lcm(A[i][0], B[0][j]))
+            expected.append(row)
+        
+        tensor_lcm = Tensor.lcm(A, B)
+        tensor_as_np = np.array(tensor_lcm.data)
+        expected_np = np.array(expected)
+        
+        self.assertTrue(np.array_equal(tensor_as_np, expected_np))
+
+    def test_gt(self):
+        """Test Tensor.__gt__ (greater than) operator."""
+        # Test scalar comparison
+        self.assertTrue(5 > 3)
+        
+        # Test array comparison
+        threshold = 5
+        A = [1, 3, 5, 7, 9]
+        expected = [x > threshold for x in A]
+        
+        tensor_gt = Tensor(A) > threshold
+        tensor_result = tensor_gt.data if isinstance(tensor_gt, Tensor) else [tensor_gt]
+        
+        self.assertEqual(tensor_result, expected)
+        
+        # Test 2D array comparison
+        A_2d = [[1, 6, 3], [8, 2, 9]]
+        threshold = 4
+        expected_2d = [[x > threshold for x in row] for row in A_2d]
+        
+        tensor_gt_2d = Tensor(A_2d) > threshold
+        tensor_result_2d = tensor_gt_2d.data
+        
+        self.assertEqual(tensor_result_2d, expected_2d)
+
+    def test_lt(self):
+        """Test Tensor.__lt__ (less than) operator."""
+        # Test scalar comparison
+        self.assertTrue(3 < 5)
+        
+        # Test array comparison
+        threshold = 5
+        A = [1, 3, 5, 7, 9]
+        expected = [x < threshold for x in A]
+        
+        tensor_lt = Tensor(A) < threshold
+        tensor_result = tensor_lt.data if isinstance(tensor_lt, Tensor) else [tensor_lt]
+        
+        self.assertEqual(tensor_result, expected)
+        
+        # Test 2D array comparison
+        A_2d = [[1, 6, 3], [8, 2, 9]]
+        threshold = 4
+        expected_2d = [[x < threshold for x in row] for row in A_2d]
+        
+        tensor_lt_2d = Tensor(A_2d) < threshold
+        tensor_result_2d = tensor_lt_2d.data
+        
+        self.assertEqual(tensor_result_2d, expected_2d)
+        
 if __name__ == "__main__":
     unittest.main()
