@@ -504,7 +504,7 @@ class Tensor:
             Tensor._set_value(c, product, init_zeros)
         return Tensor(init_zeros)
 
-    def iter_sum(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor', int]:
+    def sum(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor', int]:
         """
         TO-DO
         """
@@ -857,7 +857,7 @@ class Test:
         print(Tensor.iter_dot(A1, B1).data)
 
         A2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-        print(Tensor.iter_sum(A2, axis=2).data)
+        print(Tensor.sum(A2, axis=2).data)
 
         A = [[1], [2], [3]]   # Shape (3, 1)
         B = [[4, 5, 6]]       # Shape (1, 3)

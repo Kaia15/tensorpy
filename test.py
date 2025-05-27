@@ -384,26 +384,26 @@ class Test(unittest.TestCase):
     #         self.assertTrue(np.array_equal(np_prod_2d_axis, tensor_as_np),
     #                       f"Recursive product along axis {axis} failed for 2D array")
 
-    def test_iter_sum(self):
-        """Test Tensor.iter_sum against np.sum."""
+    def test_sum(self):
+        """Test Tensor_sum against np.sum."""
         # Test sum with no axis (all elements)
         np_sum_1d_all = np.sum(self.np_1d)
-        tensor_sum_1d_all = Tensor.iter_sum(self.tensor_1d)
+        tensor_sum_1d_all = Tensor.sum(self.tensor_1d)
         self.assertEqual(np_sum_1d_all, tensor_sum_1d_all)
         
         np_sum_2d_all = np.sum(self.np_2d)
-        tensor_sum_2d_all = Tensor.iter_sum(self.tensor_2d)
+        tensor_sum_2d_all = Tensor.sum(self.tensor_2d)
         self.assertEqual(np_sum_2d_all, tensor_sum_2d_all)
         
         np_sum_3d_all = np.sum(self.np_3d)
-        tensor_sum_3d_all = Tensor.iter_sum(self.tensor_3d)
+        tensor_sum_3d_all = Tensor.sum(self.tensor_3d)
         self.assertEqual(np_sum_3d_all, tensor_sum_3d_all)
         
         # Test sum along specific axes
         # 2D array tests
         for axis in [0, 1]:
             np_sum_2d_axis = np.sum(self.np_2d, axis=axis)
-            tensor_sum_2d_axis = Tensor.iter_sum(self.tensor_2d, axis=axis)
+            tensor_sum_2d_axis = Tensor.sum(self.tensor_2d, axis=axis)
             
             # Convert tensor result to numpy
             tensor_as_np = np.array(tensor_sum_2d_axis.data)
@@ -414,7 +414,7 @@ class Test(unittest.TestCase):
         # 3D array tests
         for axis in [0, 1, 2]:
             np_sum_3d_axis = np.sum(self.np_3d, axis=axis)
-            tensor_sum_3d_axis = Tensor.iter_sum(self.tensor_3d, axis=axis)
+            tensor_sum_3d_axis = Tensor.sum(self.tensor_3d, axis=axis)
             
             # Convert tensor result to numpy
             tensor_as_np = np.array(tensor_sum_3d_axis.data)
