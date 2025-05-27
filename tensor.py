@@ -327,6 +327,7 @@ class Tensor:
             Adata = A.data
             sA = Tensor._get_shape(Adata)
         else:
+            Adata = A
             sA = Tensor._get_shape(A)
         dk = sA[-1]
 
@@ -334,7 +335,13 @@ class Tensor:
             Bdata = B.data
             sB = Tensor._get_shape(Bdata)
         else:
+            Bdata = B
             sB = Tensor._get_shape(B)
+
+        if len(sA) == len(sB) == 1:
+            if sA[0] != sB[0]: raise ValueError("")
+            return sum([a * b for a,b in zip(Adata, Bdata)])
+
         el2 = sB[-2]
 
         # check whether dk matches el-1
@@ -357,7 +364,7 @@ class Tensor:
             for j in range(dk):
                 cA = list(c[:dimA - 1]) + [j]
                 cB = list(c[dimA - 1: dimA - 1 + dimB - 2]) + [j] + [c[-1]]
-                prod_sum += Tensor._get_value(cA, A) * Tensor._get_value(cB, B)
+                prod_sum += Tensor._get_value(cA, Adata) * Tensor._get_value(cB, Bdata)
             Tensor._set_value(c, prod_sum, init_zeros)
 
         return Tensor(init_zeros)

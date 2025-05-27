@@ -58,38 +58,6 @@ class Test(unittest.TestCase):
             self.assertTrue(np.array_equal(np_zeros, tensor_as_np))
             self.assertEqual(tensor_zeros.shape, np_zeros.shape)
     
-    # def test_array(self):
-    #     """Test Tensor.array against np.array."""
-    #     # Test basic array creation
-    #     test_cases = [
-    #         [1, 2, 3, 4],
-    #         [1.0, 2.0, 3.0],
-    #         [True, False, True],
-    #         [[1, 2], [3, 4]]
-    #     ]
-        
-    #     for data in test_cases:
-    #         np_array = np.array(data)
-    #         tensor_array = Tensor.array(data)
-            
-    #         # Convert tensor data back to numpy for comparison
-    #         tensor_as_np = np.array(tensor_array.data)
-    #         print (np_array, tensor_as_np)
-            
-    #         self.assertTrue(np.array_equal(np_array, tensor_as_np))
-    #         self.assertEqual(tensor_array.shape, np_array.shape)
-        
-    #     # Test ndmin parameter
-    #     for ndmin in range(1, 4):
-    #         np_array = np.array(self.data_1d, ndmin=ndmin)
-    #         tensor_array = Tensor.array(self.data_1d, ndmin=ndmin)
-            
-    #         # Convert tensor data back to numpy for comparison
-    #         tensor_as_np = np.array(tensor_array.data)
-            
-    #         self.assertTrue(np.array_equal(np_array, tensor_as_np))
-    #         self.assertEqual(tensor_array.shape, np_array.shape)
-    
     def test_arange(self):
         """Test Tensor.arange against np.arange with specific attention to float handling."""
         # Test cases for integer arguments
@@ -286,13 +254,13 @@ class Test(unittest.TestCase):
         # Test scalar dot scalar
         scalar1, scalar2 = 5, 7
         np_dot_scalar = np.dot(scalar1, scalar2)
-        tensor_dot_scalar = Tensor.dot(scalar1, scalar2)
+        tensor_dot_scalar = Tensor.iter_dot(scalar1, scalar2)
         
         self.assertEqual(np_dot_scalar, tensor_dot_scalar)
         
         # Test scalar dot array
         np_dot_scalar_array = np.dot(scalar1, self.np_1d)
-        tensor_dot_scalar_array = Tensor.dot(scalar1, self.tensor_1d)
+        tensor_dot_scalar_array = Tensor.iter_dot(scalar1, self.tensor_1d)
         
         # Convert tensor data back to numpy for comparison
         tensor_as_np = np.array(tensor_dot_scalar_array.data)
@@ -301,17 +269,13 @@ class Test(unittest.TestCase):
         
         # Test 1D dot 1D (inner product)
         np_dot_1d = np.dot(self.np_1d, self.np_1d)
-        tensor_dot_1d = Tensor.dot(self.tensor_1d, self.tensor_1d)
-        
-        # Convert tensor result to numpy if it's a Tensor
-        if isinstance(tensor_dot_1d, Tensor):
-            tensor_dot_1d = np.array(tensor_dot_1d.data)
+        tensor_dot_1d = Tensor.iter_dot(self.tensor_1d, self.tensor_1d)
             
         self.assertEqual(np_dot_1d, tensor_dot_1d)
         
         # Test 2D dot 2D (matrix multiplication)
         np_dot_2d = np.dot(self.np_2d, self.np_2d.T)  # Ensure compatible shapes
-        tensor_dot_2d = Tensor.dot(self.tensor_2d, self.tensor_2d.transpose())
+        tensor_dot_2d = Tensor.iter_dot(self.tensor_2d, Tensor.transpose(self.tensor_2d))
         
         # Convert tensor data back to numpy for comparison
         tensor_as_np = np.array(tensor_dot_2d.data)
@@ -339,7 +303,7 @@ class Test(unittest.TestCase):
         try:
             # Using matmul for batch matrix multiplication
             np_dot_complex = np.dot(np_A, np_B)
-            tensor_dot_complex = Tensor.dot(tensor_A, tensor_B)
+            tensor_dot_complex = Tensor.iter_dot(tensor_A, tensor_B)
             print (tensor_dot_complex.data)
             print (np_dot_complex)
             
