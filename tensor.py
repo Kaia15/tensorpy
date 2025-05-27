@@ -700,7 +700,7 @@ class Tensor:
         is_tensor = isinstance(a, Tensor)
         if not is_tensor:
             if isinstance(a, float) or isinstance(a, int):
-                return a < thresold
+                return a > thresold
 
         sh = a.shape if is_tensor else Tensor._get_shape(a)
         adata = a.data if is_tensor else a
@@ -733,7 +733,7 @@ class Tensor:
 
         if Bbool:
             if not Atensor or isinstance(A, list): raise TypeError("")
-            a_sh = Tensor._get_shape(A) if not Btensor else Tensor._get_shape(A.data)
+            a_sh = Tensor._get_shape(A) if not Atensor else Tensor._get_shape(A.data)
             adata = A.data if Atensor else A
             all_coors = Tensor._all_coords(a_sh)
             for c in all_coors:
@@ -741,10 +741,14 @@ class Tensor:
                 Tensor._set_value(c, (aval and B), adata)
             return Tensor(adata)
         
-        sA = Tensor._get_shape(A) if not Btensor else Tensor._get_shape(A.data)
+        sA = Tensor._get_shape(A) if not Atensor else Tensor._get_shape(A.data)
         adata = A.data if Atensor else A
         sB = Tensor._get_shape(B) if not Btensor else Tensor._get_shape(B.data)
         bdata = B.data if Btensor else B
+
+        if len(sA) == len(sB) == 1:
+            if sA[0] != sB[0]: raise ValueError("")
+            return Tensor([(a & b) for a,b in zip(adata, bdata)])
 
         # Pad shapes with 1s to make them equal length
         dimA, dimB = len(sA), len(sB)
@@ -834,7 +838,7 @@ class Test:
             ]
         ]
 
-        print(Tensor.iter_prod(test_array, axis=2).data)
+        print(Tensor.prod(test_array, axis=2).data)
 
         A = [
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],  # 1st 3x4 block

@@ -564,6 +564,55 @@ class Test(unittest.TestCase):
         tensor_result_2d = tensor_lt_2d.data
         
         self.assertEqual(tensor_result_2d, expected_2d)
+
+    def test_logical_and(self):
+        """Test Tensor.__and__ (logical AND) operator."""
+        # Test scalar boolean AND
+        self.assertEqual(True & True, True)
+        self.assertEqual(True & False, False)
+        self.assertEqual(False & True, False)
+        self.assertEqual(False & False, False)
+        
+        # Test boolean + array
+        A = [True, False, True, False]
+        scalar_bool = True
+        expected = [x and scalar_bool for x in A]
+        
+        tensor_and = Tensor(A) & scalar_bool
+        tensor_result = tensor_and.data
+        
+        self.assertEqual(tensor_result, expected)
+        
+        # Test array + array logical AND (same shape)
+        A = [True, False, True, False]
+        B = [True, True, False, False]
+        expected = [a and b for a, b in zip(A, B)]
+        
+        tensor_and = Tensor(A) & Tensor(B)
+        tensor_result = tensor_and.data
+        
+        self.assertEqual(tensor_result, expected)
+        
+        # Test broadcasting with logical AND
+        A = [[True], [False]]    # (2, 1)
+        B = [[True, False]]      # (1, 2)
+        
+        
+        tensor_and = Tensor(A) & Tensor(B)
+        tensor_result = tensor_and.data
+        
+        # Test combining comparison operations with logical AND
+        A = [1, 2, 3, 4]
+        B = [1, 2, 3, 4]
+        tensor_a = Tensor(A)
+        tensor_b = Tensor(B)
+        
+        gt_result = tensor_a > 1  # [False, True, True, True]
+        lt_result = tensor_b < 4  # [True, True, True, False]
+
+        combined = gt_result & lt_result  # [False, True, True, False]
+        expected = [False, True, True, False]
+        self.assertEqual(combined.data, expected)
         
 if __name__ == "__main__":
     unittest.main()
