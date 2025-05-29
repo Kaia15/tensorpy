@@ -1,5 +1,5 @@
 # TensorPy
-TensorPy is a lightweight, NumPy-inspired numerical computing library that offers a simplified and customizable array-processing framework. Built for prototyping and experimentation, TensorPy implements key features like array creation, reshaping, linear algebra operations, mathematical functions, and broadcasting, while highlighting internal logic and computation details.
+TensorPy is a lightweight, NumPy-inspired numerical computing library that offers a simplified and customizable array-processing framework. Built for prototyping and experimentation, TensorPy implements key features such as array creation, reshaping, linear algebra operations, mathematical functions, and broadcasting, while highlighting its internal logic and computational details.
 
 ## Requirements
 
@@ -192,13 +192,40 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 14. `.sqrt()`:
 15. `.positive()`:
 16. `.negative()`: 
-   - Hint: look at **magic methods** in Python to represent unary minus operator
+   - General Formula: `A(i, j, k,..., n) = (-1) * A(i, j, k,..., n)`
+   - Override the magic (dunder) method `__neg__`, which can be found by printing some built-in methods (as shown below)
    - ```
      print(dir(int))
      # Output: ['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '_...]
      ```
-17. `.logical_and()`:
-18. `.logical_or()`:
+   - Example:
+     ```
+     A = 4 -> A1 = -A = -4
+     A = [[1, 2, 3]] -> A2 = -A = [[-1, -2, -3]]
+     ```
+17. `.logical_and(A: cond, B: cond) -> list[bool]`:
+   - General Form:
+     + `A(d1, d2, ..., dk,..., dm), B(e1, e2, ..., en-2, en)`
+     + `C[d1][d2]..[dk][ei+1]..[en] = A[d1][d2]..[0 -> dk]..[dm] & B[e1]..[0 -> ei]...[en]` (applying **padding** and **broadcasting** as `.sum(*args)`, `.dot(*arg)`).
+   - Since the passing parameters can be 2 conditions, we need to construct and rewrite `__lt__`, and `__gt__` for the basic operators of comparisons
+   - 2 sub-methods:
+     + `__lt__(threshold: Union[int, float]) -> list[bool]`
+     + `__gt__(threshold: Union[int, float]) -> list[bool]`
+   - Example:
+     ```
+     A = [1, 2, 3, 4]
+     B = [1, 2, 3, 4]
+     tensor_a = Tensor(A)
+     tensor_b = Tensor(B)
+        
+     gt_result = tensor_a > 1  # [False, True, True, True]
+     lt_result = tensor_b < 4  # [True, True, True, False]
+
+     combined = gt_result & lt_result  # [False, True, True, False]
+     expected = [False, True, True, False]
+     ```
+     
+19. `.logical_or()`:
     
 ### Polynomials
 1. `.polyadd`:
