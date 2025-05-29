@@ -250,6 +250,8 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
   ![image](https://github.com/user-attachments/assets/ee1a3d25-11e6-407d-be97-5c98fc735c9d)
 
-  
+05.29.25
+
+   ![image](https://github.com/user-attachments/assets/4d58b541-5234-40b0-b0a2-06ed6f481eda)
 
 
