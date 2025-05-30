@@ -237,9 +237,23 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
 ### Sorting, Searching, and Counting
 1. `.sort()`
-2. `.partition()`
-3. `.where()`
+   - General Form:
+     ```
+     A(i1, i2, ..., in) = sorted A(d1, d2, ..., dx, ..., dn) # x = input axis
+     ```
+2. `.partition()`:
+   - Ref: https://github.com/mathics/Mathics/blob/master/mathics/algorithm/introselect.py (for default **introselect**)
 
+3. `.where(condition: Union[list, bool], x, y)`
+   - General Form:
+     ```
+     # Case 1: condition: list[bool]
+     Z (i, j, ..., n) = if cond[i][j]...[n] then X[i][j]...[n] else Y[i][j]...[n]
+
+     # Case 2: condition: bool
+     Z = X if condition = True else Y
+     ```
+     
 ### Screenshots
 
 - 05.13.25:
