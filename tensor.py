@@ -818,7 +818,38 @@ class Tensor:
                 Tensor._set_value(c, (-1) * val, adata)
             return adata
         return Tensor(negative(self.data))
+    
+    # DO NOT SUPPORT dtype when sorting a structured array as Numpy does
+    def sort(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor']:
+        is_tensor = isinstance(a, Tensor)
 
+        if is_tensor:
+            adata = a.data
+        else: 
+            adata = a
+        
+        sh = Tensor._get_shape(adata)
+
+        if axis != None:
+            rem_shape = list(sh[:axis]) + list(sh[axis + 1:])
+            all_rem_coors = Tensor._all_coords(rem_shape)
+            for c in all_rem_coors:
+                parsed_c = list(c)
+                current = []
+                for j in range (sh[axis]):
+                    original_c = parsed_c[:axis] + [j] + parsed_c[axis:]
+                    val = Tensor._get_value(original_c, adata)
+                    current += [val]
+                current.sort()
+                for j in range (sh[axis]):
+                    original_c = parsed_c[:axis] + [j] + parsed_c[axis:]
+                    Tensor._set_value(original_c, current[j], adata)
+            
+            return Tensor(adata)
+        else:
+            flatten_a = Tensor.flatten(Tensor(adata), 'C')
+            flatten_a.sort()
+            return Tensor(flatten_a)
 
 class Test:
     @staticmethod
@@ -929,6 +960,9 @@ class Test:
         D = B > 3
         print (C & D)
 
+        A = [[1,4],[3,1]]
+        print(Tensor.sort(A).data)
+        print (Tensor.sort(A, axis = 0).data)
 
 """
 Why do we need to test multiprocessing in main() stack?
