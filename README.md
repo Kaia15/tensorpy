@@ -233,7 +233,8 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
 ### Input and Output
 - Try some approaches: buffer, I/O, **mmap**, etc.
-- **Learn the differences among those approaches**
+- **Learn the differences (benefits / trade-offs) among those approaches**
+- Ref: https://docs.python.org/3/library/mmap.html
   
 1. `.load()`
 2. `.save()`
