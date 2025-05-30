@@ -296,7 +296,7 @@ class Tensor:
 
         return flat_data
 
-    def iter_dot(A: Union['Tensor', list, int], B: Union['Tensor', list, int]) -> 'Tensor':
+    def dot(A: Union['Tensor', list, int], B: Union['Tensor', list, int]) -> 'Tensor':
         # A = (d1, d2,..., dk), B = (e1, e2, ..., el-2, el)
         """
         TO-DO
@@ -711,7 +711,7 @@ class Tensor:
             Tensor._set_value(c, bval, adata)
         return Tensor(adata)
     
-    def __and__(A, B) -> 'Tensor':
+    def __and__(A, B) -> list[bool]:
         # Compare A's shape and B's shape
         Atensor = isinstance(A, Tensor)
         Btensor = isinstance(B, Tensor)
@@ -729,7 +729,7 @@ class Tensor:
             for c in all_coors:
                 bval = Tensor._get_value(c, bdata)
                 Tensor._set_value(c, (bval and A), bdata)
-            return Tensor(bdata)
+            return bdata
 
         if Bbool:
             if not Atensor or isinstance(A, list): raise TypeError("")
@@ -739,7 +739,7 @@ class Tensor:
             for c in all_coors:
                 aval = Tensor._get_value(c, adata)
                 Tensor._set_value(c, (aval and B), adata)
-            return Tensor(adata)
+            return adata
         
         sA = Tensor._get_shape(A) if not Atensor else Tensor._get_shape(A.data)
         adata = A.data if Atensor else A
@@ -748,7 +748,7 @@ class Tensor:
 
         if len(sA) == len(sB) == 1:
             if sA[0] != sB[0]: raise ValueError("")
-            return Tensor([(a & b) for a,b in zip(adata, bdata)])
+            return [(a & b) for a,b in zip(adata, bdata)]
 
         # Pad shapes with 1s to make them equal length
         dimA, dimB = len(sA), len(sB)
@@ -769,7 +769,7 @@ class Tensor:
             else:
                 raise ValueError(f"Shapes {sA} and {sB} are not broadcastable")
 
-        result = Tensor.zeros(result_shape)
+        result = Tensor.zeros(result_shape).data
 
         # Perform broadcasted addition
         for coor in Tensor._all_coords(result_shape):
@@ -791,7 +791,7 @@ class Tensor:
             a_val = Tensor._get_value(a_index, adata)
             b_val = Tensor._get_value(b_index, bdata)
             # C[d1][d2]..[dk][ei+1]..[en] = A[d1][d2]..[0 -> dk]..[dm] + B[e1]..[0 -> ei]...[en]
-            Tensor._set_value(coor, (a_val and b_val), result.data)
+            Tensor._set_value(coor, (a_val and b_val), result)
 
         return result
 
@@ -851,119 +851,196 @@ class Tensor:
             flatten_a.sort()
             return Tensor(flatten_a)
 
+    def partition(a: Union[list, 'Tensor'], k: Union[int, float], kind: str = "introselect") -> list:
+        atensor = isinstance(a, Tensor)
+        if atensor:
+            adata = a.data
+            if not adata: return []
+        
+        if not atensor:
+            if not a: return []
+            a = Tensor(a)
+
+        flatten_a = Tensor.flatten(a, 'C')
+
+        n = len(flatten_a)
+        pivot = flatten_a[k]
+        # i, j = 0, n - 1
+
+        # while True:
+        #     while i < n and flatten_a[i] <= pivot:
+        #         i += 1
+        #     while j > 0 and flatten_a[j] >= pivot:
+        #         j -= 1
+        #     if i >= j:
+        #         break
+        #     flatten_a[i], flatten_a[j] = flatten_a[j], flatten_a[i]
+        #     i += 1
+        #     j -= 1
+
+        # if k > i:
+        #     flatten_a[i], flatten_a[k] = flatten_a[k], flatten_a[i]
+        #     i += 1
+        # elif k < j:
+        #     flatten_a[k], flatten_a[j] = flatten_a[j], flatten_a[k]
+        #     j -= 1
+
+        return flatten_a
+            
+    def where(condition: Union[list, bool], x: Union[list, 'Tensor'], y: Union[list, 'Tensor']) -> list:
+        xtensor = isinstance(x, Tensor)
+        ytensor = isinstance(y, Tensor)
+
+        if xtensor:
+            xdata = x.data
+        else:
+            xdata = x
+        
+        if ytensor:
+            ydata = y.data
+        else:
+            ydata = y
+
+        if isinstance(condition, bool):
+            return xdata if condition else ydata
+
+        cond_sh = Tensor._get_shape(condition)
+        xsh = Tensor._get_shape(xdata)
+        ysh = Tensor._get_shape(ydata)
+
+        if cond_sh != xsh or cond_sh != ysh or xsh != ysh:
+            raise TypeError("")
+        
+        all_coors = Tensor._all_coords(cond_sh)
+        init_zeros = Tensor.zeros(cond_sh).data
+
+        for c in all_coors:
+            xval, yval = Tensor._get_value(c, xdata), Tensor._get_value(c, ydata)
+            val = xval if Tensor._get_value(c, condition) else yval
+            Tensor._set_value(c, val, init_zeros)
+
+        return init_zeros
+
 class Test:
     @staticmethod
     def unittest():
-        test_array = [
-            [
-                [
-                    [[1, 2, 3], [4, 5, 6]],
-                    [[7, 8, 9], [10, 11, 12]],
-                    [[13, 14, 15], [16, 17, 18]]
-                ],
-                [
-                    [[19, 20, 21], [22, 23, 24]],
-                    [[25, 26, 27], [28, 29, 30]],
-                    [[31, 32, 33], [34, 35, 36]]
-                ]
-            ]
-        ]
+        # test_array = [
+        #     [
+        #         [
+        #             [[1, 2, 3], [4, 5, 6]],
+        #             [[7, 8, 9], [10, 11, 12]],
+        #             [[13, 14, 15], [16, 17, 18]]
+        #         ],
+        #         [
+        #             [[19, 20, 21], [22, 23, 24]],
+        #             [[25, 26, 27], [28, 29, 30]],
+        #             [[31, 32, 33], [34, 35, 36]]
+        #         ]
+        #     ]
+        # ]
 
-        print(Tensor.prod(test_array, axis=2).data)
+        # print(Tensor.prod(test_array, axis=2).data)
 
-        A = [
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],  # 1st 3x4 block
-            [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]  # 2nd 3x4 block
-        ]
-
-        B = [
-            [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15],
-                [16, 17, 18, 19, 20]],  # 1st 4x5 block
-            [[21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [
-                31, 32, 33, 34, 35], [36, 37, 38, 39, 40]]  # 2nd 4x5 block
-        ]
-
-        print(Tensor.iter_dot(A, B).data)
-
-        A1 = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]
-        B1 = [[1, 2], [3, 4], [5, 6]]
-        B1 = 2
-
-        print(Tensor.iter_dot(A1, B1).data)
-
-        A2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-        print(Tensor.sum(A2, axis=2).data)
-
-        A = [[1], [2], [3]]   # Shape (3, 1)
-        B = [[4, 5, 6]]       # Shape (1, 3)
-        # Output: [[5, 6, 7], [6, 7, 8], [7, 8, 9]]
-        print(Tensor.add(A, B).data)
-
-        A = [[[1, 2, 3]]]     # Shape (1, 1, 3)
-        B = [[[4], [5]]]      # Shape (1, 2, 1)
-        print(Tensor.add(A, B).data)
-
-        A = [
-            [[1, 2], [3, 4]],
-            [[5, 6], [7, 8]]
-        ]  # Shape (2, 2, 2)
-
-        B = [
-            [[10], [20]]
-        ]  # Shape (1, 2, 1)
-        print(Tensor.add(A, B).data)
+        # A = [
+        #     [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],  # 1st 3x4 block
+        #     [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]  # 2nd 3x4 block
+        # ]
 
         # B = [
-        #     [100, 200, 300, 400],  # Row 0
-        #     [500, 600, 700, 800]   # Row 1
+        #     [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15],
+        #         [16, 17, 18, 19, 20]],  # 1st 4x5 block
+        #     [[21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [
+        #         31, 32, 33, 34, 35], [36, 37, 38, 39, 40]]  # 2nd 4x5 block
         # ]
-        # Raise ValueError
-        # print (Tensor.add(A, B))
 
-        A = 4
-        B = 6
-        print(Tensor.lcm(A, B))
+        # print(Tensor.dot(A, B).data)
 
-        A = [
-            [  # Block 0
-                [1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12]
-            ],
-            [  # Block 1
-                [13, 14, 15, 16],
-                [17, 18, 19, 20],
-                [21, 22, 23, 24]
-            ]
-        ]
+        # A1 = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]
+        # B1 = [[1, 2], [3, 4], [5, 6]]
+        # B1 = 2
 
-        A5 = Tensor(A)
-        A6 = -A5
-        print(A6.data)
+        # print(Tensor.dot(A1, B1).data)
 
-        A = 4
-        A7 = -A
-        print(A7)
+        # A2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+        # print(Tensor.sum(A2, axis=2).data)
 
-        A = [[1,2,3,4]]
-        B = [1,2,3,4]
-        C = Tensor(A) > 1
-        D = Tensor(B) < 3
-        print (C.data)
-        print (D.data)
-        E = C & D 
-        print (E.data)
+        # A = [[1], [2], [3]]   # Shape (3, 1)
+        # B = [[4, 5, 6]]       # Shape (1, 3)
+        # # Output: [[5, 6, 7], [6, 7, 8], [7, 8, 9]]
+        # print(Tensor.add(A, B).data)
 
-        A = 4 
-        B = 5
-        C = A < 2
-        D = B > 3
-        print (C & D)
+        # A = [[[1, 2, 3]]]     # Shape (1, 1, 3)
+        # B = [[[4], [5]]]      # Shape (1, 2, 1)
+        # print(Tensor.add(A, B).data)
+
+        # A = [
+        #     [[1, 2], [3, 4]],
+        #     [[5, 6], [7, 8]]
+        # ]  # Shape (2, 2, 2)
+
+        # B = [
+        #     [[10], [20]]
+        # ]  # Shape (1, 2, 1)
+        # print(Tensor.add(A, B).data)
+
+        # # B = [
+        # #     [100, 200, 300, 400],  # Row 0
+        # #     [500, 600, 700, 800]   # Row 1
+        # # ]
+        # # Raise ValueError
+        # # print (Tensor.add(A, B))
+
+        # A = 4
+        # B = 6
+        # print(Tensor.lcm(A, B))
+
+        # A = [
+        #     [  # Block 0
+        #         [1, 2, 3, 4],
+        #         [5, 6, 7, 8],
+        #         [9, 10, 11, 12]
+        #     ],
+        #     [  # Block 1
+        #         [13, 14, 15, 16],
+        #         [17, 18, 19, 20],
+        #         [21, 22, 23, 24]
+        #     ]
+        # ]
+
+        # A5 = Tensor(A)
+        # A6 = -A5
+        # print(A6.data)
+
+        # A = 4
+        # A7 = -A
+        # print(A7)
+
+        # A = [[1,2,3,4]]
+        # B = [1,2,3,4]
+        # C = Tensor(A) > 1
+        # D = Tensor(B) < 3
+        # print (C.data)
+        # print (D.data)
+        # E = C & D 
+        # print (E.data)
+
+        # A = 4 
+        # B = 5
+        # C = A < 2
+        # D = B > 3
+        # print (C & D)
 
         A = [[1,4],[3,1]]
         print(Tensor.sort(A).data)
         print (Tensor.sort(A, axis = 0).data)
 
+        cond = [[True, False], [False, True]]
+        X = [[1, 2], [3, 4]]
+        Y = [[9, 8], [7, 6]]
+        print (Tensor.where(cond, X, Y))
+
+        A = [7, 1, 7, 7, 1, 5, 7, 2, 3, 2, 6, 2, 3, 0]
+        print (Tensor.partition(A, 4))
 """
 Why do we need to test multiprocessing in main() stack?
 """

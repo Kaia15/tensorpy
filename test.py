@@ -252,13 +252,13 @@ class Test(unittest.TestCase):
         # Test scalar dot scalar
         scalar1, scalar2 = 5, 7
         np_dot_scalar = np.dot(scalar1, scalar2)
-        tensor_dot_scalar = Tensor.iter_dot(scalar1, scalar2)
+        tensor_dot_scalar = Tensor.dot(scalar1, scalar2)
         
         self.assertEqual(np_dot_scalar, tensor_dot_scalar)
         
         # Test scalar dot array
         np_dot_scalar_array = np.dot(scalar1, self.np_1d)
-        tensor_dot_scalar_array = Tensor.iter_dot(scalar1, self.tensor_1d)
+        tensor_dot_scalar_array = Tensor.dot(scalar1, self.tensor_1d)
         
         # Convert tensor data back to numpy for comparison
         tensor_as_np = np.array(tensor_dot_scalar_array.data)
@@ -267,13 +267,13 @@ class Test(unittest.TestCase):
         
         # Test 1D dot 1D (inner product)
         np_dot_1d = np.dot(self.np_1d, self.np_1d)
-        tensor_dot_1d = Tensor.iter_dot(self.tensor_1d, self.tensor_1d)
+        tensor_dot_1d = Tensor.dot(self.tensor_1d, self.tensor_1d)
             
         self.assertEqual(np_dot_1d, tensor_dot_1d)
         
         # Test 2D dot 2D (matrix multiplication)
         np_dot_2d = np.dot(self.np_2d, self.np_2d.T)  # Ensure compatible shapes
-        tensor_dot_2d = Tensor.iter_dot(self.tensor_2d, Tensor.transpose(self.tensor_2d))
+        tensor_dot_2d = Tensor.dot(self.tensor_2d, Tensor.transpose(self.tensor_2d))
         
         # Convert tensor data back to numpy for comparison
         tensor_as_np = np.array(tensor_dot_2d.data)
@@ -301,7 +301,7 @@ class Test(unittest.TestCase):
         try:
             # Using matmul for batch matrix multiplication
             np_dot_complex = np.dot(np_A, np_B)
-            tensor_dot_complex = Tensor.iter_dot(tensor_A, tensor_B)
+            tensor_dot_complex = Tensor.dot(tensor_A, tensor_B)
             
             # Convert tensor data back to numpy for comparison
             tensor_as_np = np.array(tensor_dot_complex.data)
@@ -579,7 +579,7 @@ class Test(unittest.TestCase):
         expected = [x and scalar_bool for x in A]
         
         tensor_and = Tensor(A) & scalar_bool
-        tensor_result = tensor_and.data
+        tensor_result = tensor_and
         
         self.assertEqual(tensor_result, expected)
         
@@ -589,7 +589,7 @@ class Test(unittest.TestCase):
         expected = [a and b for a, b in zip(A, B)]
         
         tensor_and = Tensor(A) & Tensor(B)
-        tensor_result = tensor_and.data
+        tensor_result = tensor_and
         
         self.assertEqual(tensor_result, expected)
         
@@ -599,7 +599,7 @@ class Test(unittest.TestCase):
         
         
         tensor_and = Tensor(A) & Tensor(B)
-        tensor_result = tensor_and.data
+        tensor_result = tensor_and
         
         # Test combining comparison operations with logical AND
         A = [1, 2, 3, 4]
@@ -612,7 +612,7 @@ class Test(unittest.TestCase):
 
         combined = gt_result & lt_result  # [False, True, True, False]
         expected = [False, True, True, False]
-        self.assertEqual(combined.data, expected)
+        self.assertEqual(combined, expected)
         
 if __name__ == "__main__":
     unittest.main()
