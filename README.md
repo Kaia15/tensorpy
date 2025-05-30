@@ -232,6 +232,9 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 2. `.polymul`:
 
 ### Input and Output
+- Try some approaches: buffer, I/O, **mmap**, etc.
+- **Learn the differences among those approaches**
+  
 1. `.load()`
 2. `.save()`
 
