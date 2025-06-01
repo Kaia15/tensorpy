@@ -903,6 +903,18 @@ class Tensor:
     def poly1d(c: list[Union[list, float]], r: bool = False):
         return Polynomial(c, r)
     
+    def polyadd(c1: Union[Polynomial, list[Union[int, float]]], c2: Union[list[Union[int, float]], Polynomial]):
+        if isinstance(c1, list) and isinstance(c2, list): return Polynomial.add(c1, c2)
+        elif isinstance(c1, Polynomial) and isinstance(c2, Polynomial): return Polynomial.add(c1.c, c2.c)
+        else: 
+            raise TypeError(f"")
+    
+    def polymul(c1: Union[Polynomial, list[Union[int, float]]], c2: Union[list[Union[int, float]], Polynomial]):
+        if isinstance(c1, list) and isinstance(c2, list): return Polynomial.multiply(c1, c2)
+        elif isinstance(c1, Polynomial) and isinstance(c2, Polynomial): return Polynomial.multiply(c1.c, c2.c)
+        else: 
+            raise TypeError(f"")
+        
     # DO NOT SUPPORT dtype when sorting a structured array as Numpy does
     def sort(a: Union[list, 'Tensor'], axis: int = None) -> Union['Tensor']:
         is_tensor = isinstance(a, Tensor)
@@ -1008,127 +1020,142 @@ class Tensor:
 class Test:
     @staticmethod
     def unittest():
-        # test_array = [
-        #     [
-        #         [
-        #             [[1, 2, 3], [4, 5, 6]],
-        #             [[7, 8, 9], [10, 11, 12]],
-        #             [[13, 14, 15], [16, 17, 18]]
-        #         ],
-        #         [
-        #             [[19, 20, 21], [22, 23, 24]],
-        #             [[25, 26, 27], [28, 29, 30]],
-        #             [[31, 32, 33], [34, 35, 36]]
-        #         ]
-        #     ]
-        # ]
+        test_array = [
+            [
+                [
+                    [[1, 2, 3], [4, 5, 6]],
+                    [[7, 8, 9], [10, 11, 12]],
+                    [[13, 14, 15], [16, 17, 18]]
+                ],
+                [
+                    [[19, 20, 21], [22, 23, 24]],
+                    [[25, 26, 27], [28, 29, 30]],
+                    [[31, 32, 33], [34, 35, 36]]
+                ]
+            ]
+        ]
 
-        # print(Tensor.prod(test_array, axis=2).data)
+        print(Tensor.prod(test_array, axis=2).data)
 
-        # A = [
-        #     [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],  # 1st 3x4 block
-        #     [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]  # 2nd 3x4 block
-        # ]
+        A = [
+            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],  # 1st 3x4 block
+            [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]  # 2nd 3x4 block
+        ]
+
+        B = [
+            [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15],
+                [16, 17, 18, 19, 20]],  # 1st 4x5 block
+            [[21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [
+                31, 32, 33, 34, 35], [36, 37, 38, 39, 40]]  # 2nd 4x5 block
+        ]
+
+        print(Tensor.dot(A, B).data)
+
+        A1 = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]
+        B1 = [[1, 2], [3, 4], [5, 6]]
+        B1 = 2
+
+        print(Tensor.dot(A1, B1).data)
+
+        A2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+        print(Tensor.sum(A2, axis=2).data)
+
+        A = [[1], [2], [3]]   # Shape (3, 1)
+        B = [[4, 5, 6]]       # Shape (1, 3)
+        # Output: [[5, 6, 7], [6, 7, 8], [7, 8, 9]]
+        print(Tensor.add(A, B).data)
+
+        A = [[[1, 2, 3]]]     # Shape (1, 1, 3)
+        B = [[[4], [5]]]      # Shape (1, 2, 1)
+        print(Tensor.add(A, B).data)
+
+        A = [
+            [[1, 2], [3, 4]],
+            [[5, 6], [7, 8]]
+        ]  # Shape (2, 2, 2)
+
+        B = [
+            [[10], [20]]
+        ]  # Shape (1, 2, 1)
+        print(Tensor.add(A, B).data)
 
         # B = [
-        #     [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15],
-        #         [16, 17, 18, 19, 20]],  # 1st 4x5 block
-        #     [[21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [
-        #         31, 32, 33, 34, 35], [36, 37, 38, 39, 40]]  # 2nd 4x5 block
+        #     [100, 200, 300, 400],  # Row 0
+        #     [500, 600, 700, 800]   # Row 1
         # ]
+        # Raise ValueError
+        # print (Tensor.add(A, B))
 
-        # print(Tensor.dot(A, B).data)
+        A = 4
+        B = 6
+        print(Tensor.lcm(A, B))
 
-        # A1 = [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]
-        # B1 = [[1, 2], [3, 4], [5, 6]]
-        # B1 = 2
+        A = [
+            [  # Block 0
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12]
+            ],
+            [  # Block 1
+                [13, 14, 15, 16],
+                [17, 18, 19, 20],
+                [21, 22, 23, 24]
+            ]
+        ]
 
-        # print(Tensor.dot(A1, B1).data)
+        A5 = Tensor(A)
+        A6 = -A5
+        print(A6.data)
 
-        # A2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-        # print(Tensor.sum(A2, axis=2).data)
+        A = 4
+        A7 = -A
+        print(A7)
 
-        # A = [[1], [2], [3]]   # Shape (3, 1)
-        # B = [[4, 5, 6]]       # Shape (1, 3)
-        # # Output: [[5, 6, 7], [6, 7, 8], [7, 8, 9]]
-        # print(Tensor.add(A, B).data)
+        A = [[1,2,3,4]]
+        B = [1,2,3,4]
+        C = Tensor(A) > 1
+        D = Tensor(B) < 3
+        print (C.data)
+        print (D.data)
+        E = C & D 
+        print (E.data)
 
-        # A = [[[1, 2, 3]]]     # Shape (1, 1, 3)
-        # B = [[[4], [5]]]      # Shape (1, 2, 1)
-        # print(Tensor.add(A, B).data)
+        A = 4 
+        B = 5
+        C = A < 2
+        D = B > 3
+        print (C & D)
 
-        # A = [
-        #     [[1, 2], [3, 4]],
-        #     [[5, 6], [7, 8]]
-        # ]  # Shape (2, 2, 2)
+        A = [[1,4],[3,1]]
+        print(Tensor.sort(A).data)
+        print (Tensor.sort(A, axis = 0).data)
 
-        # B = [
-        #     [[10], [20]]
-        # ]  # Shape (1, 2, 1)
-        # print(Tensor.add(A, B).data)
+        cond = [[True, False], [False, True]]
+        X = [[1, 2], [3, 4]]
+        Y = [[9, 8], [7, 6]]
+        print (Tensor.where(cond, X, Y))
 
-        # # B = [
-        # #     [100, 200, 300, 400],  # Row 0
-        # #     [500, 600, 700, 800]   # Row 1
-        # # ]
-        # # Raise ValueError
-        # # print (Tensor.add(A, B))
-
-        # A = 4
-        # B = 6
-        # print(Tensor.lcm(A, B))
-
-        # A = [
-        #     [  # Block 0
-        #         [1, 2, 3, 4],
-        #         [5, 6, 7, 8],
-        #         [9, 10, 11, 12]
-        #     ],
-        #     [  # Block 1
-        #         [13, 14, 15, 16],
-        #         [17, 18, 19, 20],
-        #         [21, 22, 23, 24]
-        #     ]
-        # ]
-
-        # A5 = Tensor(A)
-        # A6 = -A5
-        # print(A6.data)
-
-        # A = 4
-        # A7 = -A
-        # print(A7)
-
-        # A = [[1,2,3,4]]
-        # B = [1,2,3,4]
-        # C = Tensor(A) > 1
-        # D = Tensor(B) < 3
-        # print (C.data)
-        # print (D.data)
-        # E = C & D 
-        # print (E.data)
-
-        # A = 4 
-        # B = 5
-        # C = A < 2
-        # D = B > 3
-        # print (C & D)
-
-        # A = [[1,4],[3,1]]
-        # print(Tensor.sort(A).data)
-        # print (Tensor.sort(A, axis = 0).data)
-
-        # cond = [[True, False], [False, True]]
-        # X = [[1, 2], [3, 4]]
-        # Y = [[9, 8], [7, 6]]
-        # print (Tensor.where(cond, X, Y))
-
-        # A = [7, 1, 7, 7, 1, 5, 7, 2, 3, 2, 6, 2, 3, 0]
-        # print (Tensor.partition(A, 4))
+        A = [7, 1, 7, 7, 1, 5, 7, 2, 3, 2, 6, 2, 3, 0]
+        print (Tensor.partition(A, 4))
 
         first_poly = Tensor.poly1d([1, 2, 3])
         print (first_poly)
         print (first_poly(0.5))
+
+        second_poly = Tensor.polyadd([1, 2], [9, 5, 4])
+        print (second_poly)
+
+        third_poly = Tensor.polymul([1, 2, 3], [9, 5, 1])
+        print (third_poly)
+
+        p = Tensor.poly1d([1, 2, 3])
+        print ((p * p).get_coeffs())
+        print ((p + p).get_coeffs())
+        print (p[1])
+        print ((p ** 3).get_coeffs())
+        print ((Tensor.poly1d([1, -1]) * Tensor.poly1d([1, -2])).get_coeffs())
+        print (Tensor.poly1d([1, 2], True).get_coeffs())
+        print (Tensor.polyadd(p, p).get_coeffs())
 """
 Why do we need to test multiprocessing in main() stack?
 """
