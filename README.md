@@ -232,6 +232,10 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 2. `.polymul`:
 
 ### Input and Output
+- Try some approaches: buffer, I/O, **mmap**, etc.
+- **Learn the differences (benefits / trade-offs) among those approaches**
+- Ref: https://docs.python.org/3/library/mmap.html
+  
 1. `.load()`
 2. `.save()`
 
@@ -246,13 +250,15 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
 3. `.where(condition: Union[list, bool], x, y)`
    - General Form:
-     ```
-     # Case 1: condition: list[bool]
-     Z (i, j, ..., n) = if cond[i][j]...[n] then X[i][j]...[n] else Y[i][j]...[n]
-
-     # Case 2: condition: bool
-     Z = X if condition = True else Y
-     ```
+     - Case 1: `cond: list[bool]`
+        ```
+        Z (i, j, ..., n) = if cond[i][j]...[n] then X[i][j]...[n] else Y[i][j]...[n]
+        ```
+      
+     - Case 2: `cond: bool`
+        ```
+        Z = X if condition = True else Y
+        ```
      
 ### Screenshots
 
