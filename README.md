@@ -228,6 +228,7 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 19. `.logical_or()`:
     
 ### Polynomials
+1. `.poly1d(c_or_r, r=False, variable=None)`
 1. `.polyadd`:
 2. `.polymul`:
 
