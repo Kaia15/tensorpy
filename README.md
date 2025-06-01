@@ -250,11 +250,13 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
 3. `.where(condition: Union[list, bool], x, y)`
    - General Form:
+     - Case 1: `cond: list[bool]`
      ```
-     # Case 1: condition: list[bool]
      Z (i, j, ..., n) = if cond[i][j]...[n] then X[i][j]...[n] else Y[i][j]...[n]
-
-     # Case 2: condition: bool
+     ```
+      
+     - Case 2: `cond: bool`
+     ```
      Z = X if condition = True else Y
      ```
      
