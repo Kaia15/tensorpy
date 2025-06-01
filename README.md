@@ -261,6 +261,11 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
      Polynomial.poly1d([1, 2], True)
      # poly1d([ 1., -3.,  2.])
      ```
+   - Find the power of a polynomial with the given exponent
+     ```
+     p ** 2
+     # poly1d([ 1,  4, 10, 12,  9])
+     ```
 2. `.polyadd`:
 3. `.polymul`:
 
