@@ -228,9 +228,41 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 19. `.logical_or()`:
     
 ### Polynomials
+#### class Polynomial
 1. `.poly1d(c_or_r, r=False, variable=None)`
-1. `.polyadd`:
-2. `.polymul`:
+   - Constructor of the polynomial with the input coefficient list
+     ```
+     p = np.poly1d([1, 2, 3])
+     print(np.poly1d(p))
+     # x^2 + 2x + 3
+     ```
+   - Evaluate the polynomial at a given value of `x`
+     ```
+     p(0.5)
+     # 4.25
+     ```
+   - Show the coefficients
+     ```
+     p.c
+     # array([1, 2, 3])
+     ```
+   - Show the co-efficient of the *kth* power in the polynomial
+     ```
+     p[1]
+     # 2
+     ```
+   - Polynomials can be added, subtracted, multiplied, and divided
+     ```
+     p * p
+     # poly1d([ 1,  4, 10, 12,  9])
+     ```
+   - Construct a polynomial from its roots
+     ```
+     Polynomial.poly1d([1, 2], True)
+     # poly1d([ 1., -3.,  2.])
+     ```
+2. `.polyadd`:
+3. `.polymul`:
 
 ### Input and Output
 - Try some approaches: buffer, I/O, **mmap**, etc.
