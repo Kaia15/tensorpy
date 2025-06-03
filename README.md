@@ -267,8 +267,22 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
      # poly1d([ 1,  4, 10, 12,  9])
      ```
 2. `.polyadd`:
+     ```
+     p1 = np.poly1d([1, 2])
+     p2 = np.poly1d([9, 5, 4])
+     print(p1)
+     print(p2)
+     print(np.polyadd(p1, p2)) -> Return [9,6,6] # Polynomial Object using .get_coeffs()
+     ```
 3. `.polymul`:
-
+     ```
+     p1 = np.poly1d([1, 2, 3])
+     p2 = np.poly1d([9, 5, 1])
+     print(p1)
+     print(p2)
+     print(np.polymul(p1, p2)) # Return [ 9, 23, 38, 17,  3] # Polynomial Object using .get_coeffs()
+     ```
+     
 ### Input and Output
 - Try some approaches: buffer, I/O, **mmap**, etc.
 - **Learn the differences (benefits / trade-offs) among those approaches**
