@@ -3,6 +3,7 @@ from itertools import product
 from multiprocessing import Pool, cpu_count
 import math
 from poly import Polynomial
+from find import introselect
 
 class Tensor:
     """
@@ -959,29 +960,8 @@ class Tensor:
 
         flatten_a = Tensor.flatten(a, 'C')
 
-        n = len(flatten_a)
-        pivot = flatten_a[k]
-        # i, j = 0, n - 1
-
-        # while True:
-        #     while i < n and flatten_a[i] <= pivot:
-        #         i += 1
-        #     while j > 0 and flatten_a[j] >= pivot:
-        #         j -= 1
-        #     if i >= j:
-        #         break
-        #     flatten_a[i], flatten_a[j] = flatten_a[j], flatten_a[i]
-        #     i += 1
-        #     j -= 1
-
-        # if k > i:
-        #     flatten_a[i], flatten_a[k] = flatten_a[k], flatten_a[i]
-        #     i += 1
-        # elif k < j:
-        #     flatten_a[k], flatten_a[j] = flatten_a[j], flatten_a[k]
-        #     j -= 1
-
-        return flatten_a
+        partition_a = introselect(flatten_a)
+        return partition_a
             
     def where(condition: Union[list, bool], x: Union[list, 'Tensor'], y: Union[list, 'Tensor']) -> list:
         xtensor = isinstance(x, Tensor)
