@@ -228,10 +228,61 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 19. `.logical_or()`:
     
 ### Polynomials
+#### class Polynomial
 1. `.poly1d(c_or_r, r=False, variable=None)`
-1. `.polyadd`:
-2. `.polymul`:
-
+   - Constructor of the polynomial with the input coefficient list
+     ```
+     p = np.poly1d([1, 2, 3])
+     print(np.poly1d(p))
+     # x^2 + 2x + 3
+     ```
+   - Evaluate the polynomial at a given value of `x`
+     ```
+     p(0.5)
+     # 4.25
+     ```
+   - Show the coefficients
+     ```
+     p.c
+     # array([1, 2, 3])
+     ```
+   - Show the co-efficient of the *kth* power in the polynomial
+     ```
+     p[1]
+     # 2
+     ```
+   - Polynomials can be added, subtracted, multiplied, and divided
+     ```
+     p * p
+     # poly1d([ 1,  4, 10, 12,  9])
+     ```
+   - Construct a polynomial from its roots
+     ```
+     Polynomial.poly1d([1, 2], True)
+     # poly1d([ 1., -3.,  2.])
+     ```
+   - Find the power of a polynomial with the given exponent
+     ```
+     p ** 2
+     # poly1d([ 1,  4, 10, 12,  9])
+     ```
+2. `.polyadd`:
+     ```
+     p1 = np.poly1d([1, 2])
+     p2 = np.poly1d([9, 5, 4])
+     print(p1)
+     print(p2)
+     print(np.polyadd(p1, p2)) -> Return [9,6,6] # Polynomial Object using .get_coeffs()
+     ```
+3. `.polymul`:
+     ```
+     p1 = np.poly1d([1, 2, 3])
+     p2 = np.poly1d([9, 5, 1])
+     print(p1)
+     print(p2)
+     print(np.polymul(p1, p2)) # Return [ 9, 23, 38, 17,  3] # Polynomial Object using .get_coeffs()
+     ```
+     
 ### Input and Output
 - Try some approaches: buffer, I/O, **mmap**, etc.
 - **Learn the differences (benefits / trade-offs) among those approaches**
