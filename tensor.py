@@ -9,6 +9,7 @@ class Tensor:
     """
     This class is designed & implemented for N-array in Python. 
     It can have basic operations including creation, manipulation, mathematical ops, and poly(s).
+    Some of attributes in this class use single leading underscore (for i.e _get_shape) to signal for *not for public use*
     """
 
     def __init__(self, data: list) -> 'Tensor':
