@@ -28,7 +28,7 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
     - Creates an array filled with ones
 
 5. `.copy(a)`: 
-    - Create a copy of the input array
+    - Need to re-implement because of misunderstanding about `deepcopy()` (deep copy) & `copy()` (shallow copy, only copy the highest layer wrapping around the objects) in Python. Compared to Numpy, the correct picked method is `deepcopy()` which makes the copies of each level regardless nested elements (for i.e: list of *int* objects in Python). Ref: https://www.geeksforgeeks.org/python/copy-python-deep-copy-shallow-copy/
 
 ### Array Manipulation
 
