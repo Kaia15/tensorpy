@@ -84,27 +84,9 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
    - **Challenge**: Flip the axes with the given order (especially with increasing count of array dimensions)
 
 ### Linear Algebra
-1. `.dot(A, B)`:
-   - Output the dot product of any two N-D arrays `A`, `B`
-   - Example:
-     ```
-     A = [[ [1, 2, 3], [4, 5, 6] ], [ [7, 8, 9], [10, 11, 12] ]]
-     B = [[1, 2], [3, 4], [5, 6]]
-     -> A . B = [[ [22, 28], [49, 64] ], [ [76, 100], [103, 136] ]]
-     ```
-   - Generic Formula:
-     
-      1.1: **Condition**:
-     
-      `dk`(*last dimension* of `A`) **must match** `el-1` (*second-to-last dimension* of `B`)
-     
-      1.2: Final shape:
-     
-      `(d1, ..., dk-1, e1, ..., el-2, el)` (remove matching dimension `dk`)
-     
-      1.3:
+1. `.dot()`:
 
-      `C_{i1,..., ik-1, j1,..., jl-2} = \sum_{m}A_{i1,..., ik-1, m} . B_{j1, ..., jl-2, m, jl}`
+   TBD (need to revise)
 
      1.3.1: Example:
 
