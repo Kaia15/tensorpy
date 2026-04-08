@@ -88,9 +88,7 @@ TensorPy is a lightweight, NumPy-inspired numerical computing library that offer
 
    TBD (need to revise)
 
-     1.3.1: Example:
-
-     ![image](https://github.com/user-attachments/assets/670081dd-3249-4806-9384-5d46f5c76962)
+     
   
    - Corresponding method: `.iter_dot()`
      
