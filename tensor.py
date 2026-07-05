@@ -7,22 +7,27 @@ from find import introselect
 
 class Tensor:
     """
-    This class is designed & implemented for N-array in Python. 
+    This class is designed & implemented for N-arrays in Python. 
     It can have basic operations including creation, manipulation, mathematical ops, and poly(s).
-    Some of attributes in this class use single leading underscore (for i.e _get_shape) to signal for internal class uses, 
-    however, users still can access them by calling the correct attribute name(s).
+    Some of the attributes in this class use a single leading underscore (for i.e _get_shape) to signal internal class uses; 
+    however, users can still access them by calling the correct attribute name(s).
+
+    Rule to write any function in this class:
+    - Please always follow https://typing.python.org/en/latest/spec/annotations.html to declare both input/output types
+    - Union(type_1, type_2,..., type_n): Input/Output values can belong to one of several different types: type_1, type_2,..., type_n
+    - This class, along with the whole packaged lib, lives in Python3.9 environment.
     """
 
     def __init__(self, data: list) -> 'Tensor':
         """
-        TO-DO
+        Convert any input list to custom Tensor class object
         """
         self.data = data
         self.shape = Tensor._get_shape(data)
 
     def _get_shape(data: list) -> tuple:
         """
-        TO-DO
+        Implement getter of Tensor object
         """
         shape = []
         while True:
