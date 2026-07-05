@@ -626,12 +626,12 @@ class Tensor:
             shape = Tensor._get_shape(mat)
             result = Tensor.zeros(shape)
             for coor in Tensor._all_coords(shape):
-                val = Tensor._get_value(coor, mat) + scalar
+                val = math.lcm(Tensor._get_value(coor, mat),scalar)
                 Tensor._set_value(coor, val, result.data)
             return result
 
         if isinstance(B, int):
-            return Tensor.add(B, A)
+            return Tensor.lcm(B,A)
 
         # Both are tensors/lists
         Adata = A.data if isinstance(A, Tensor) else A
